@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import 'katex/dist/katex.min.css';
-import 'katex/dist/katex.min.css';
 import TeX from '@matejmazur/react-katex';
 
-class RawNote extends Component {
+class RawSnippet extends Component {
 
+    // raw should be the raw_snippet value from an api request.
     constructor(props) {
         super(props);
         this.state = {
@@ -31,4 +31,4 @@ class RawNote extends Component {
 
 }
 
-export default RawNote;
+export default RawSnippet;

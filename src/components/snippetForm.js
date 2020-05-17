@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
 
 // Components
-import RawNote from "./rawNote";
+import RawSnippet from "./rawSnippet";
 
 // API
 import { apiGet } from '../api/functions';
@@ -19,7 +19,6 @@ class SnippetForm extends Component {
             course: '',
             rawString: '',
             raw: [],
-            notes: '',
             types: [],
             courses: [],
             createHandler: props.handler
@@ -109,7 +108,6 @@ class SnippetForm extends Component {
             type: this.state.type,
             course: this.state.course,
             raw: this.state.raw,
-            notes: this.state.notes,
         }
 
         this.state.createHandler(e, values);
@@ -154,12 +152,8 @@ class SnippetForm extends Component {
                     <Label for="raw" sm={2}>Raw</Label>
                     <Input type="textarea" value={ this.state.rawString } onChange={ (e) => this.rawChange(e)} name="raw" id="raw" />
                 </FormGroup>
-                <RawNote raw={ this.state.raw } />
-                <FormGroup row>
-                    <Label for="notes" sm={2}>Additional Notes</Label>
-                    <Input type="textarea" value={this.state.notes} onChange={ (e) => this.inputChange(e, 'notes')} name="notes" id="notes" />
-                </FormGroup>
-                <Button color="primary" onClick={ (e) => this.formSubmitBuilder(e) }>Create</Button>
+                <RawSnippet raw={ this.state.raw } />
+                <Button color="primary" onClick={ (e) => this.formSubmitBuilder(e) }>Create Snippet</Button>
             </div>
         );
     }

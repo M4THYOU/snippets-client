@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+.margin-bottom {
+  margin-bottom: 1rem;
+}
+
+.secondary-header {
+  text-align: left;
+}
+
+a.box-close{
+  position: absolute;
+  z-index: 100;
+
+  top: 15%;
+  left: 85%;
+
+  line-height: 0;
+  cursor:pointer;
+  color: red !important;
+  font-size: 31px;
+  font-weight: bold;
+
+  /*
+  border: 1px solid #AEAEAE;
+  border-radius: 30px;
+  background: red;
+  padding: 11px 3px;
+  */
+}
