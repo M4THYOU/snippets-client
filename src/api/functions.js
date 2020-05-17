@@ -19,3 +19,16 @@ export function apiGet(endpoint, id) {
     const url = buildUrl(endpoint, id);
     return fetch(url);
 }
+
+export function apiCreate(endpoint, data) {
+    const url = buildUrl(endpoint, null);
+    const jsonData = JSON.stringify(data);
+    return fetch(url, {
+        method: 'POST',
+        body: jsonData,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    })
+}

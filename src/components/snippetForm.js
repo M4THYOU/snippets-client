@@ -6,6 +6,7 @@ import RawNote from "./rawNote";
 
 // API
 import { apiGet } from '../api/functions';
+import {EndpointsEnum} from "../api/endpoints";
 
 class SnippetForm extends Component {
 
@@ -32,20 +33,28 @@ class SnippetForm extends Component {
 
     // api calls
     getTypes() {
-        apiGet('/types/')
+        apiGet(EndpointsEnum.TYPES)
             .then(res => res.json())
             .then(result => {
-                this.setState({types: result.data});
+                let type = '';
+                if (result.data[0]) {
+                    type = result.data[0].name;
+                }
+                this.setState({types: result.data, type});
             })
             .catch(e => {
                 console.error(e);
             })
     }
     getCourses() {
-        apiGet('/courses/')
+        apiGet(EndpointsEnum.COURSES)
             .then(res => res.json())
             .then(result => {
-                this.setState({courses: result.data});
+                let course = '';
+                if (result.data[0]) {
+                    course = result.data[0].code;
+                }
+                this.setState({courses: result.data, course});
             })
             .catch(e => {
                 console.error(e);
