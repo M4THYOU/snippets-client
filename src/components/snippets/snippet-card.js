@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Card, Button, CardTitle, CardSubtitle, CardHeader, CardBody } from 'reactstrap';
 
 // Components
-import RawSnippet from "../rawSnippet";
+import RawSnippet from "../latex-editor/partials/rawSnippet";
 
 class SnippetCard extends Component {
 
@@ -13,6 +13,7 @@ class SnippetCard extends Component {
             course: props.course,
             created_at: props.created_at,
             id: props.id,
+            is_title_math: props.is_title_math,
             raw: JSON.parse(props.raw),
             type: props.type,
             title: props.title,
@@ -25,11 +26,27 @@ class SnippetCard extends Component {
         this.props.history.push('/snippet/' + this.state.id);
     }
 
+    renderTitle () {
+        if (this.state.is_title_math) {
+            const math = [{
+                isMath: true,
+                value: this.state.title
+            }];
+            return (
+                <RawSnippet raw={ math } />
+            );
+        } else {
+            return (
+                <CardTitle>{ this.state.title }</CardTitle>
+            );
+        }
+    }
+
     render() {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>{ this.state.title }</CardTitle>
+                    { this.renderTitle() }
                     <hr />
                     <CardSubtitle>{ this.state.course }</CardSubtitle>
                 </CardHeader>

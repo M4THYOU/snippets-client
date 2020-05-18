@@ -39,6 +39,7 @@ class Main extends Component {
         const course = snippet.course;
         const created_at = snippet.created_at;
         const id = snippet.id;
+        const is_title_math = snippet.is_title_math;
         const raw = snippet.raw;
         const snippet_type = snippet.snippet_type;
         const title = snippet.title;
@@ -48,6 +49,7 @@ class Main extends Component {
                          course={course}
                          created_at={created_at}
                          id={id}
+                         is_title_math={is_title_math}
                          raw={raw}
                          snippet_type={snippet_type}
                          title={title}

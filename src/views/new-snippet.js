@@ -1,26 +1,36 @@
 import React, { Component } from "react";
-import {Container, Alert, Button, Col, Row} from "reactstrap";
+import {Container, Alert, Button} from "reactstrap";
 
 // Components
 import SnippetForm from "../components/snippetForm";
 import NoteForm from "../components/noteForm";
-import NoteCard from "../components/notes/note-card";
+import Editor from "../components/latex-editor/editor";
 
 // Functions/Enums
 import {apiCreate} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 import {buildSnippet} from "../utils/db";
-import {chunkArray} from "../utils/utils";
+import {genNote, renderNotes} from "../utils/notes";
 
 class NewSnippet extends Component {
+
+    notesPerRow = 4;
 
     constructor(props) {
         super(props);
         this.state = {
             error: null,
             isAddingNote: false,
-            notes: ['test']
+            notes: []//this.genNotes(14)
         };
+    }
+
+    genNotes(count) {
+        let temp = [];
+        for (let i = 1; i <= count; i++) {
+            temp.push(genNote(i, `${i}`, null));
+        }
+        return temp;
     }
 
     isValidSnippetForm(title, type, course, raw) {
@@ -60,8 +70,15 @@ class NewSnippet extends Component {
             title,
             snippet_type: type,
             course,
-            raw: snippet
+            raw: snippet,
+            is_title_math: 0
         };
+
+        // if title is wrapped in backticks, it must be math.
+        if (title[0] === "`" && title[title.length - 1] === "`") {
+            data.title = data.title.substring(1, data.title.length-1);
+            data.is_title_math = 1;
+        }
 
         apiCreate(EndpointsEnum.SNIPPETS, data)
             .then(res => {
@@ -74,6 +91,12 @@ class NewSnippet extends Component {
             })
             .then(result => {
                 if (result) {
+                    const notesArray = this.state.notes.map(note => note.text);
+                    const notes = {
+                        'notes': notesArray,
+                        'snippet_id': result.data.id
+                    }
+                    apiCreate(EndpointsEnum.NOTES, notes);
                     this.props.history.push('/');
                 }
             })
@@ -95,13 +118,19 @@ class NewSnippet extends Component {
             return;
         }
         let notes = this.state.notes.slice();
-        notes.push(text);
+        let newNote = genNote(null, text, null);
+        notes.push(newNote);
         this.setState({isAddingNote: false, notes});
     }
 
     deleteNoteHandler(e, i) {
         e.preventDefault();
-        console.log('DELETE');
+
+        const listIndex = i - 1;
+        const notes = this.state.notes.slice();
+
+        notes.splice(listIndex, 1);
+        this.setState({notes});
     }
 
     newNoteButtonHandler(e) {
@@ -118,37 +147,6 @@ class NewSnippet extends Component {
                 </Alert>
             );
         }
-    }
-
-    renderSingleNote(text, i) {
-        return <NoteCard text={ text }
-                         key={ i }
-                         id={ i }
-                         deleteHandler={ (e) => this.deleteNoteHandler(e, i) }
-        />;
-    }
-
-    renderNotesRow(notes, row_i) {
-        return notes.map((text, i) => {
-            const index = (row_i + 1) * (i + 1);
-            console.log(index);
-            return (
-                <Col sm="3" key={'col_' + i}>
-                    {this.renderSingleNote(text, index)}
-                </Col>
-            );
-        });
-    }
-
-    renderNotes() {
-        const noteRows = chunkArray(4, this.state.notes);
-        return noteRows.map((row, i) => {
-            return (
-                <Row className="margin-bottom" key={ 'row_' + i }>
-                    { this.renderNotesRow(row, i) }
-                </Row>
-            );
-        });
     }
 
     renderNoteForm() {
@@ -172,9 +170,10 @@ class NewSnippet extends Component {
                     <SnippetForm handler={ (e, values) => this.createSnippetHandler(e, values) }/>
 
                     <hr />
+                    <Editor />
 
                     <h2 className="secondary-header">Notes</h2>
-                    { this.renderNotes() }
+                    { renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i)) }
                     { this.renderNoteForm() }
                 </Container>
 

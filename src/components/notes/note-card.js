@@ -7,8 +7,6 @@ class NoteCard extends Component {
         super(props);
 
         this.state = {
-            id: props.id,
-            text: props.text,
             deleteHandler: props.deleteHandler,
             isHovered: false
         };
@@ -23,7 +21,7 @@ class NoteCard extends Component {
     }
     deleteHandler(e) {
         e.preventDefault();
-        this.state.deleteHandler(e, this.state.id);
+        this.state.deleteHandler(e, this.props.id);
     }
 
     renderX() {
@@ -31,6 +29,7 @@ class NoteCard extends Component {
             return (
                 <a className="box-close" id="box-close"
                    onMouseEnter={ () => this.cardMouseEnterHandler() }
+                   onMouseLeave={ () => this.cardMouseLeaveHandler() }
                    onClick={ (e) => this.deleteHandler(e) }
                 >x</a>
             );
@@ -45,7 +44,7 @@ class NoteCard extends Component {
                       onMouseEnter={ () => this.cardMouseEnterHandler() }
                       onMouseLeave={ () => this.cardMouseLeaveHandler() }
                 >
-                    <CardText>{ this.state.text }</CardText>
+                    <CardText>{ this.props.text }</CardText>
                 </Card>
             </div>
         );

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
 
 // Components
-import RawSnippet from "./rawSnippet";
+import RawSnippet from "./latex-editor/partials/rawSnippet";
 
 // API
 import { apiGet } from '../api/functions';

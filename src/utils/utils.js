@@ -17,3 +17,17 @@ export function chunkArray(size, arr) {
     }
     return newArr;
 }
+
+/**
+ * Inserts one string into another at the given index.
+ * @param s1 {String} string to be inserted into
+ * @param i {Number} index to be inserted at
+ * @param s2 {String} string to be inserted
+ * @returns {String}
+ */
+export function insertIntoString(s1, i, s2) {
+    if (i > 0) {
+        return s1.substring(0, i) + s2 + s1.substring(i);
+    }
+    return s1 + s2;
+}
