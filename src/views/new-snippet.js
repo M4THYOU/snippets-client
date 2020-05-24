@@ -4,13 +4,13 @@ import {Container, Alert, Button} from "reactstrap";
 // Components
 import SnippetForm from "../components/snippetForm";
 import NoteForm from "../components/noteForm";
-import Editor from "../components/latex-editor/editor";
 
 // Functions/Enums
 import {apiCreate} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
-import {buildSnippet} from "../utils/db";
-import {genNote, renderNotes} from "../utils/notes";
+import {buildSnippet} from "../utils/snippets";
+import {genNote, isValidNoteForm, renderNotes} from "../utils/notes";
+import {isValidSnippetForm} from "../utils/snippets";
 
 class NewSnippet extends Component {
 
@@ -33,26 +33,6 @@ class NewSnippet extends Component {
         return temp;
     }
 
-    isValidSnippetForm(title, type, course, raw) {
-        if (!title) {
-            alert('Please enter a title.');
-            return false;
-        }
-        if (!type) {
-            alert('Please select a type.');
-            return false;
-        }
-        if (!course) {
-            alert('Please select a course.');
-            return false;
-        }
-        if (raw.length === 0) {
-            alert('Please enter a snippet!');
-            return false;
-        }
-        return true;
-    }
-
     createSnippetHandler(e, values) {
         e.preventDefault();
         const title = values.title;
@@ -60,7 +40,7 @@ class NewSnippet extends Component {
         const course = values.course;
         const raw = values.raw;
 
-        const validForm = this.isValidSnippetForm(title, type, course, raw);
+        const validForm = isValidSnippetForm(title, type, course, raw);
         if (!validForm) {
             return;
         }
@@ -105,20 +85,16 @@ class NewSnippet extends Component {
             });
     }
 
-    isValidNoteForm(text) {
-        return !!text;
-    }
-
     createNoteHandler(e, values) {
         e.preventDefault();
-        const text = values.text;
+        const raw = values.raw;
 
-        const validForm = this.isValidNoteForm(text);
+        const validForm = isValidNoteForm(raw);
         if (!validForm) {
             return;
         }
         let notes = this.state.notes.slice();
-        let newNote = genNote(null, text, null);
+        let newNote = genNote(null, raw, null);
         notes.push(newNote);
         this.setState({isAddingNote: false, notes});
     }
@@ -170,8 +146,6 @@ class NewSnippet extends Component {
                     <SnippetForm handler={ (e, values) => this.createSnippetHandler(e, values) }/>
 
                     <hr />
-                    <Editor />
-
                     <h2 className="secondary-header">Notes</h2>
                     { renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i)) }
                     { this.renderNoteForm() }

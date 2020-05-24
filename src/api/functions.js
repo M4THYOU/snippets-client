@@ -68,6 +68,19 @@ export function apiCreate(endpoint, data) {
     })
 }
 
+export function apiPatch(endpoint, id, data) {
+    const url = buildUrl(endpoint, id);
+    const jsonData = JSON.stringify(data);
+    return fetch(url, {
+        method: 'PATCH',
+        body: jsonData,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    })
+}
+
 export function apiDelete(endpoint, id) {
     const url = buildUrl(endpoint, id);
     return fetch(url, {

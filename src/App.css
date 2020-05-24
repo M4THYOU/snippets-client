@@ -65,3 +65,7 @@ a.box-close{
   padding: 11px 3px;
   */
 }
+
+.snippet-button {
+  float: right;
+}

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
 
 // Components
-import RawSnippet from "./latex-editor/partials/rawSnippet";
+import Editor from "./latex-editor/editor";
 
 // API
 import { apiGet } from '../api/functions';
@@ -13,15 +13,22 @@ class SnippetForm extends Component {
     constructor(props) {
         super(props);
 
+        const isEdit = !!props.edit;
+        let title = this.props.title || '';
+        if (isEdit && this.props.isTitleMath) {
+            title = '`' + title + '`';
+        }
+
         this.state = {
-            title: '',
-            type: '',
-            course: '',
-            rawString: '',
-            raw: [],
+            isEdit,
+            title,
+            type: this.props.type || '',
+            course: this.props.course || '',
+            raw: this.props.raw || [],
+            isTitleMath: !!this.props.isTitleMath,
             types: [],
             courses: [],
-            createHandler: props.handler
+            doneHandler: props.handler
         };
     }
 
@@ -35,8 +42,8 @@ class SnippetForm extends Component {
         apiGet(EndpointsEnum.TYPES)
             .then(res => res.json())
             .then(result => {
-                let type = '';
-                if (result.data[0]) {
+                let type = this.state.type;
+                if (result.data[0] && !type) {
                     type = result.data[0].name;
                 }
                 this.setState({types: result.data, type});
@@ -49,8 +56,8 @@ class SnippetForm extends Component {
         apiGet(EndpointsEnum.COURSES)
             .then(res => res.json())
             .then(result => {
-                let course = '';
-                if (result.data[0]) {
+                let course = this.state.course;
+                if (result.data[0] && !course) {
                     course = result.data[0].code;
                 }
                 this.setState({courses: result.data, course});
@@ -65,39 +72,9 @@ class SnippetForm extends Component {
         this.setState({[field]: e.target.value});
     }
 
-    rawChange(e) {
-        const val = e.target.value;
-        const raw = this.parseRawString(val);
-
-        this.setState({rawString: val, raw});
-    }
-
-    parseRawString(s) {
-        const regMatch = s.split(/`(.*?)`/);
-
-        if (s.length === 0) {
-            return [];
-        }
-
-        let isMath = false;
-        if ((s.charAt() === '`') && (s.charAt(1) !== '`') && (regMatch[0] === '')) {
-            isMath = true;
-        }
-
-        let arr = [];
-        regMatch.forEach(regS => {
-            if (!!regS) {
-                const obj = {
-                    isMath,
-                    value: regS
-                };
-                arr.push(obj);
-                isMath = !isMath;
-            }
-        });
-
-        return arr;
-
+    rawChange(rawString, raw) {
+        // we don't actually need the rawString for anything.
+        this.setState({raw});
     }
 
     formSubmitBuilder(e) {
@@ -110,7 +87,7 @@ class SnippetForm extends Component {
             raw: this.state.raw,
         }
 
-        this.state.createHandler(e, values);
+        this.state.doneHandler(e, values);
     }
 
     renderTypeOptions() {
@@ -119,6 +96,29 @@ class SnippetForm extends Component {
 
     renderCourseOptions() {
         return this.state.courses.map((course) => <option key={course.id}>{course.code}</option>);
+    }
+
+    renderEditor() {
+        if (this.state.isEdit) {
+            return (
+                <Editor inputHandler={ (rawString, raw) => this.rawChange(rawString, raw) }
+                        raw={ this.state.raw }
+                />
+            );
+        } else {
+            return (
+                <Editor inputHandler={ (rawString, raw) => this.rawChange(rawString, raw) } />
+            );
+        }
+    }
+
+    // render values
+    renderSaveValue() {
+        if (this.state.isEdit) {
+            return 'Save Changes';
+        } else {
+            return 'Create Snippet';
+        }
     }
 
     render() {
@@ -148,12 +148,10 @@ class SnippetForm extends Component {
                         </FormGroup>
                     </Col>
                 </Row>
-                <FormGroup row>
-                    <Label for="raw" sm={2}>Raw</Label>
-                    <Input type="textarea" value={ this.state.rawString } onChange={ (e) => this.rawChange(e)} name="raw" id="raw" />
-                </FormGroup>
-                <RawSnippet raw={ this.state.raw } />
-                <Button color="primary" onClick={ (e) => this.formSubmitBuilder(e) }>Create Snippet</Button>
+
+                { this.renderEditor() }
+                <br />
+                <Button color="primary" onClick={ (e) => this.formSubmitBuilder(e) }>{ this.renderSaveValue() }</Button>
             </div>
         );
     }

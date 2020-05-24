@@ -42,7 +42,8 @@ export function renderNotes(notesPerRow, notes, deleteHandler) {
 }
 
 // empty note
-export function genNote(id, text, snippet_id) {
+export function genNote(id, raw, snippet_id) {
+    const text = rawToTextDBField(raw);
     return {
         id,
         text,
@@ -50,4 +51,20 @@ export function genNote(id, text, snippet_id) {
         created_at: null,
         updated_at: null,
     };
+}
+
+// NOT for snippets raw field, just notes.
+export function rawToTextDBField(raw) {
+    return {
+        'raw': raw
+    };
+}
+
+// note handling
+export function isValidNoteForm(raw) {
+    if (raw.length === 0) {
+        alert('Please enter a snippet!');
+        return false;
+    }
+    return true;
 }

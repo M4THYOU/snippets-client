@@ -12,6 +12,8 @@ import {chunkArray} from "../utils/utils";
 
 class Main extends Component {
 
+    snippetsPerRow = 2;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -62,7 +64,7 @@ class Main extends Component {
     renderSnippetsRow(snippets) {
         return snippets.map((snippet, i) => {
             return (
-                <Col sm="4" key={ 'col_' + i }>
+                <Col sm={ 12 / this.snippetsPerRow } key={ 'col_' + i }>
                     { this.renderSingleSnippet(snippet) }
                 </Col>
             );
@@ -70,7 +72,7 @@ class Main extends Component {
     }
 
     renderSnippets() {
-        const snipRows = chunkArray(3, this.state.snippets);
+        const snipRows = chunkArray(this.snippetsPerRow, this.state.snippets);
         return snipRows.map((row, i) => {
             return (
                 <Row className="margin-bottom" key={ 'row_' + i }>

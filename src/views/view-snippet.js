@@ -8,7 +8,7 @@ import RawSnippet from "../components/latex-editor/partials/rawSnippet";
 import {apiCreate, apiDelete, apiGet} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 import NoteForm from "../components/noteForm";
-import {renderNotes} from "../utils/notes";
+import {isValidNoteForm, rawToTextDBField, renderNotes} from "../utils/notes";
 
 class ViewSnippet extends Component {
 
@@ -36,6 +36,13 @@ class ViewSnippet extends Component {
         this.getNotes();
     }
 
+    parseNotes(notesS) {
+        return notesS.map(note => {
+            note.text = JSON.parse(note.text);
+            return note;
+        });
+    }
+
     // api
     getSnippet() {
         apiGet(EndpointsEnum.SNIPPETS, this.state.id)
@@ -54,7 +61,8 @@ class ViewSnippet extends Component {
         apiGet(EndpointsEnum.NOTES, null, params)
             .then(res => res.json())
             .then(result => {
-                const notes = result.data;
+                const notesS = result.data;
+                const notes = this.parseNotes(notesS);
                 this.setState({notes});
             })
             .catch(e => {
@@ -62,26 +70,42 @@ class ViewSnippet extends Component {
             });
     }
 
-    // note handling
-    isValidNoteForm(text) {
-        return !!text;
+    deleteSnippetHandler(e) {
+        e.preventDefault();
+        apiDelete(EndpointsEnum.SNIPPETS, this.state.id)
+            .then(res => res.json())
+            .then(result => {
+                console.log(result);
+                this.props.history.push('/');
+            })
+            .catch(e => {
+                console.error(e);
+            });
+    }
+
+    editSnippetHandler(e) {
+        e.preventDefault();
+        this.props.history.push('/snippet/' + this.state.id + '/edit');
     }
 
     createNoteHandler(e, values) {
         e.preventDefault();
-        const text = values.text;
+        const raw = values.raw;
 
-        const validForm = this.isValidNoteForm(text);
+        const validForm = isValidNoteForm(raw);
         if (!validForm) {
             return;
         }
 
-        const data = {notes: [text], snippet_id: this.state.id};
+        const note = rawToTextDBField(raw);
+        const data = {notes: [note], snippet_id: this.state.id};
         apiCreate(EndpointsEnum.NOTES, data)
             .then(res => res.json())
             .then(result => {
-                console.log(result);
+                let note = result.data;
                 let notes = this.state.notes.slice();
+
+                note.text = JSON.parse(note.text);
                 notes.push(result.data);
                 this.setState({isAddingNote: false, notes});
             })
@@ -140,7 +164,11 @@ class ViewSnippet extends Component {
     render() {
         return (
             <Container>
-                { this.renderTitle() }
+                <div>
+                    <Button outline color="danger" className="snippet-button" onClick={ (e) => this.deleteSnippetHandler(e) }>Delete</Button>
+                    <Button outline color="info" className="snippet-button" onClick={ (e) => this.editSnippetHandler(e) }>Edit</Button>
+                    { this.renderTitle() }
+                </div>
                 <hr />
                 <RawSnippet raw={this.state.raw}/>
                 <hr />

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Card, CardText } from 'reactstrap';
+import RawSnippet from "../latex-editor/partials/rawSnippet";
 
 class NoteCard extends Component {
 
@@ -44,7 +45,7 @@ class NoteCard extends Component {
                       onMouseEnter={ () => this.cardMouseEnterHandler() }
                       onMouseLeave={ () => this.cardMouseLeaveHandler() }
                 >
-                    <CardText>{ this.props.text }</CardText>
+                    <RawSnippet raw={ this.props.text.raw } />
                 </Card>
             </div>
         );

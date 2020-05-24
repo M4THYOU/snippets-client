@@ -7,6 +7,7 @@ import { Route, Switch } from "react-router-dom";
 import Main from "./views/main";
 import NewSnippet from "./views/new-snippet";
 import ViewSnippet from "./views/view-snippet";
+import EditSnippet from "./views/edit-snippet";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route exact path="/" component={ Main } />
         <Route exact path="/new" component={ NewSnippet } />
         <Route exact path="/snippet/:id" component={ ViewSnippet } />
+          <Route exact path="/snippet/:id/edit" component={ EditSnippet } />
       </Switch>
     </div>
   );

@@ -12,18 +12,40 @@ class Editor extends Component {
 
     constructor(props) {
         super(props);
-
         this.inputRef = React.createRef();
+
+        const initRaw = this.props.raw || [];
         this.state = {
             rawString: '',
-            raw: []
+            raw: initRaw,
+            handler: props.inputHandler
         };
+    }
+
+    componentDidMount() {
+        if (this.state.raw.length > 0) {
+            const rawString = this.rawToRawString(this.state.raw);
+            this.setState({rawString});
+        }
     }
 
     // parsing text
     rawChange(val) {
         const raw = this.parseRawString(val);
+        this.state.handler(val, raw);
         this.setState({rawString: val, raw});
+    }
+    rawToRawString(raw) {
+        let s = '';
+        raw.forEach(part => {
+            if (part.isMath) {
+                const newS = '`' + part.value + '`';
+                s += newS;
+            } else {
+                s += part.value;
+            }
+        });
+        return s;
     }
     parseRawString(s) {
         const regMatch = s.split(/`(.*?)`/);
