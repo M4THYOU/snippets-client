@@ -1,4 +1,7 @@
 import apiUrlBase from './config';
+import {EndpointsEnum} from "./endpoints";
+
+const jwtStorageKey = 'jwt';
 
 /**
  * Appends specified params to the given url.
@@ -50,12 +53,21 @@ function buildUrl(endpoint, id, params) {
     return url;
 }
 
-export function apiGet(endpoint, id, params) {
-    const url = buildUrl(endpoint, id, params);
-    return fetch(url);
+function authHeader() {
+    const jwt = localStorage.getItem(jwtStorageKey);
+    return jwt || '';
 }
 
-export function apiCreate(endpoint, data) {
+export function apiGet(endpoint, id, params) {
+    const url = buildUrl(endpoint, id, params);
+    return fetch(url, {
+        headers: {
+            'Authorization': authHeader()
+        }
+    });
+}
+
+export function apiPost(endpoint, data) {
     const url = buildUrl(endpoint, null);
     const jsonData = JSON.stringify(data);
     return fetch(url, {
@@ -64,6 +76,7 @@ export function apiCreate(endpoint, data) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'Authorization': authHeader()
         },
     })
 }
@@ -77,6 +90,7 @@ export function apiPatch(endpoint, id, data) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'Authorization': authHeader()
         },
     })
 }
@@ -85,5 +99,41 @@ export function apiDelete(endpoint, id) {
     const url = buildUrl(endpoint, id);
     return fetch(url, {
         method: 'DELETE',
+        headers: {
+            'Authorization': authHeader()
+        }
     })
+}
+
+// Auth functions
+export function apiLogin(email, password) {
+    const data = { email, password };
+    return apiPost(EndpointsEnum.AUTHENTICATE, data)
+        .then(res => res.json())
+        .then(result => {
+            if (!!result.error) {
+                return false;
+            }
+            localStorage.setItem(jwtStorageKey, result.auth_token);
+            return true;
+        })
+        .catch(e => {
+            return false;
+        });
+}
+
+export function apiLogout() {
+    localStorage.removeItem(jwtStorageKey);
+}
+
+export async function isAuthenticated() {
+    return apiGet(EndpointsEnum.AUTHENTICATE)
+        .then(res => res.json())
+        .then(result => {
+            return result.authorized;
+        })
+        .catch(e => {
+            console.error(e);
+            return false;
+        });
 }

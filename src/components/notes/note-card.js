@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardText } from 'reactstrap';
+import { Card } from 'reactstrap';
 import RawSnippet from "../latex-editor/partials/rawSnippet";
 
 class NoteCard extends Component {
@@ -28,6 +28,7 @@ class NoteCard extends Component {
     renderX() {
         if (this.state.isHovered) {
             return (
+                // eslint-disable-next-line no-script-url,jsx-a11y/anchor-is-valid
                 <a className="box-close" id="box-close"
                    onMouseEnter={ () => this.cardMouseEnterHandler() }
                    onMouseLeave={ () => this.cardMouseLeaveHandler() }

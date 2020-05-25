@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Container, Alert, Button} from "reactstrap";
+import {Container, Alert } from "reactstrap";
 
 // Components
 import SnippetForm from "../components/snippetForm";
@@ -7,13 +7,14 @@ import SnippetForm from "../components/snippetForm";
 // Functions/Enums
 import {EndpointsEnum} from "../api/endpoints";
 import {buildSnippet, isValidSnippetForm} from "../utils/snippets";
-import {apiCreate, apiGet, apiPatch} from "../api/functions";
+import {apiGet, apiPatch, isAuthenticated} from "../api/functions";
 
 class EditSnippet extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            isLoaded: false,
             error: null,
             shouldRenderForm: false,
             id: props.match.params.id,
@@ -30,7 +31,15 @@ class EditSnippet extends Component {
     }
 
     componentDidMount() {
-        this.getSnippet();
+        isAuthenticated()
+            .then(isAuthorized => {
+                if (isAuthorized) {
+                    this.setState({isLoaded: true});
+                    this.getSnippet();
+                } else {
+                    this.props.history.push('/login');
+                }
+            });
     }
 
     // api
@@ -120,16 +129,22 @@ class EditSnippet extends Component {
     }
 
     render() {
-        return (
-            <div>
-                <h1>Edit Snippet</h1>
-                <Container>
-                    { this.renderFormError() }
-                    { this.renderForm() }
-                </Container>
+        if (this.state.isLoaded) {
+            return (
+                <div>
+                    <h1>Edit Snippet</h1>
+                    <Container>
+                        {this.renderFormError()}
+                        {this.renderForm()}
+                    </Container>
 
-            </div>
-        );
+                </div>
+            );
+        } else {
+            return (
+                <p>Loading...</p>
+            );
+        }
     }
 
 }

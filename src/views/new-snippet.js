@@ -6,7 +6,7 @@ import SnippetForm from "../components/snippetForm";
 import NoteForm from "../components/noteForm";
 
 // Functions/Enums
-import {apiCreate} from "../api/functions";
+import {apiPost, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 import {buildSnippet} from "../utils/snippets";
 import {genNote, isValidNoteForm, renderNotes} from "../utils/notes";
@@ -19,10 +19,22 @@ class NewSnippet extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoaded: false,
             error: null,
             isAddingNote: false,
             notes: []//this.genNotes(14)
         };
+    }
+
+    componentDidMount() {
+        isAuthenticated()
+            .then(isAuthorized => {
+                if (isAuthorized) {
+                    this.setState({isLoaded: true});
+                } else {
+                    this.props.history.push('/login');
+                }
+            });
     }
 
     genNotes(count) {
@@ -60,7 +72,7 @@ class NewSnippet extends Component {
             data.is_title_math = 1;
         }
 
-        apiCreate(EndpointsEnum.SNIPPETS, data)
+        apiPost(EndpointsEnum.SNIPPETS, data)
             .then(res => {
                 if (res.ok) {
                     return res.json();
@@ -76,7 +88,7 @@ class NewSnippet extends Component {
                         'notes': notesArray,
                         'snippet_id': result.data.id
                     }
-                    apiCreate(EndpointsEnum.NOTES, notes);
+                    apiPost(EndpointsEnum.NOTES, notes);
                     this.props.history.push('/');
                 }
             })
@@ -138,21 +150,27 @@ class NewSnippet extends Component {
     }
 
     render() {
-        return (
-            <div>
-                <h1>Create New Snippet</h1>
-                <Container>
-                    { this.renderFormError() }
-                    <SnippetForm handler={ (e, values) => this.createSnippetHandler(e, values) }/>
+        if (this.state.isLoaded) {
+            return (
+                <div>
+                    <h1>Create New Snippet</h1>
+                    <Container>
+                        {this.renderFormError()}
+                        <SnippetForm handler={(e, values) => this.createSnippetHandler(e, values)}/>
 
-                    <hr />
-                    <h2 className="secondary-header">Notes</h2>
-                    { renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i)) }
-                    { this.renderNoteForm() }
-                </Container>
+                        <hr/>
+                        <h2 className="secondary-header">Notes</h2>
+                        {renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i))}
+                        {this.renderNoteForm()}
+                    </Container>
 
-            </div>
-        );
+                </div>
+            );
+        } else {
+            return (
+                <p>Loading...</p>
+            );
+        }
     }
 
 }

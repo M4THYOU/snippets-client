@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FormGroup, Label, Input, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import Editor from "./latex-editor/editor";
 
 class NoteForm extends Component {

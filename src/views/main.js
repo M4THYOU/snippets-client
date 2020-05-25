@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 
 // Components
-import {apiGet} from "../api/functions";
+import {apiGet, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 
 // Functions/Enums
@@ -17,12 +17,21 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoaded: false,
             snippets: []
         };
     }
 
     componentDidMount() {
-        this.getSnippets();
+        isAuthenticated()
+            .then(isAuthorized => {
+                if (isAuthorized) {
+                    this.setState({isLoaded: true});
+                    this.getSnippets();
+                } else {
+                    this.props.history.push('/login');
+                }
+            });
     }
 
     getSnippets() {
@@ -83,16 +92,22 @@ class Main extends Component {
     }
 
     render() {
-        return (
-            <Container>
-                <h1>Snippets</h1>
-                <Link to="/new">New Snippet</Link>
-                <hr/>
+        if (this.state.isLoaded) {
+            return (
                 <Container>
-                    { this.renderSnippets() }
+                    <h1>My Snippets</h1>
+                    <Link to="/new">New Snippet</Link>
+                    <hr/>
+                    <Container>
+                        {this.renderSnippets()}
+                    </Container>
                 </Container>
-            </Container>
-        );
+            );
+        } else {
+            return (
+                <p>Loading...</p>
+            );
+        }
     }
 
 }

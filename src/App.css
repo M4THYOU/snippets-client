@@ -69,3 +69,7 @@ a.box-close{
 .snippet-button {
   float: right;
 }
+
+.left-align {
+  text-align: left;
+}

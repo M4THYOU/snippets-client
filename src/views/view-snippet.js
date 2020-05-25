@@ -5,7 +5,7 @@ import {Button, Container} from "reactstrap";
 import RawSnippet from "../components/latex-editor/partials/rawSnippet";
 
 // Functions/Enums
-import {apiCreate, apiDelete, apiGet} from "../api/functions";
+import {apiPost, apiDelete, apiGet, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 import NoteForm from "../components/noteForm";
 import {isValidNoteForm, rawToTextDBField, renderNotes} from "../utils/notes";
@@ -18,6 +18,7 @@ class ViewSnippet extends Component {
         super(props);
 
         this.state = {
+            isLoaded: false,
             course: null,
             created_at: null,
             id: props.match.params.id,
@@ -32,8 +33,16 @@ class ViewSnippet extends Component {
     }
 
     componentDidMount() {
-        this.getSnippet();
-        this.getNotes();
+        isAuthenticated()
+            .then(isAuthorized => {
+                if (isAuthorized) {
+                    this.setState({isLoaded: true});
+                    this.getSnippet();
+                    this.getNotes();
+                } else {
+                    this.props.history.push('/login');
+                }
+            });
     }
 
     parseNotes(notesS) {
@@ -99,7 +108,7 @@ class ViewSnippet extends Component {
 
         const note = rawToTextDBField(raw);
         const data = {notes: [note], snippet_id: this.state.id};
-        apiCreate(EndpointsEnum.NOTES, data)
+        apiPost(EndpointsEnum.NOTES, data)
             .then(res => res.json())
             .then(result => {
                 let note = result.data;
@@ -162,21 +171,29 @@ class ViewSnippet extends Component {
     }
 
     render() {
-        return (
-            <Container>
-                <div>
-                    <Button outline color="danger" className="snippet-button" onClick={ (e) => this.deleteSnippetHandler(e) }>Delete</Button>
-                    <Button outline color="info" className="snippet-button" onClick={ (e) => this.editSnippetHandler(e) }>Edit</Button>
-                    { this.renderTitle() }
-                </div>
-                <hr />
-                <RawSnippet raw={this.state.raw}/>
-                <hr />
-                <h2 className="secondary-header">Notes</h2>
-                { renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i)) }
-                { this.renderNoteForm() }
-            </Container>
-        );
+        if (this.state.isLoaded) {
+            return (
+                <Container>
+                    <div>
+                        <Button outline color="danger" className="snippet-button"
+                                onClick={(e) => this.deleteSnippetHandler(e)}>Delete</Button>
+                        <Button outline color="info" className="snippet-button"
+                                onClick={(e) => this.editSnippetHandler(e)}>Edit</Button>
+                        {this.renderTitle()}
+                    </div>
+                    <hr/>
+                    <RawSnippet raw={this.state.raw}/>
+                    <hr/>
+                    <h2 className="secondary-header">Notes</h2>
+                    {renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i))}
+                    {this.renderNoteForm()}
+                </Container>
+            );
+        } else {
+            return (
+                <p>Loading...</p>
+            );
+        }
     }
 
 }
