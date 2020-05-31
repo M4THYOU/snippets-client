@@ -2,11 +2,11 @@ import React, { Component } from "react";
 
 // Components
 import TextButton from "./partials/textButton";
-import TextInput from "./partials/textInput";
+import TextArea from "./partials/textArea";
 
 // Utils
 import {LatexStringsEnum} from "./utils/latexStrings"
-import {insertIntoString} from "../../utils/utils";
+import {insertIntoString, parseRawString, rawToRawString} from "./utils/utils";
 
 class Editor extends Component {
 
@@ -24,54 +24,20 @@ class Editor extends Component {
 
     componentDidMount() {
         if (this.state.raw.length > 0) {
-            const rawString = this.rawToRawString(this.state.raw);
+            const rawString = rawToRawString(this.state.raw);
             this.setState({rawString});
         }
     }
 
     // parsing text
     rawChange(val) {
-        const raw = this.parseRawString(val);
+        const raw = parseRawString(val);
         this.state.handler(val, raw);
         this.setState({rawString: val, raw});
     }
-    rawToRawString(raw) {
-        let s = '';
-        raw.forEach(part => {
-            if (part.isMath) {
-                const newS = '`' + part.value + '`';
-                s += newS;
-            } else {
-                s += part.value;
-            }
-        });
-        return s;
-    }
-    parseRawString(s) {
-        const regMatch = s.split(/`(.*?)`/);
-        if (s.length === 0) {
-            return [];
-        }
-        let isMath = false;
-        if ((s.charAt() === '`') && (s.charAt(1) !== '`') && (regMatch[0] === '')) {
-            isMath = true;
-        }
-        let arr = [];
-        regMatch.forEach(regS => {
-            if (!!regS) {
-                const obj = {
-                    isMath,
-                    value: regS
-                };
-                arr.push(obj);
-                isMath = !isMath;
-            }
-        });
-        return arr;
-    }
 
     isMathAtIndex(index, s) {
-        const arr = this.parseRawString(s);
+        const arr = parseRawString(s);
 
         let sLen = s.length;
         let currentIsMath = false;
@@ -135,10 +101,10 @@ class Editor extends Component {
     render() {
         return (
             <div>
-                <TextInput textChangeHandler={ (e) => this.rawChange(e.target.value) }
-                           raw={ this.state.raw }
-                           rawString={ this.state.rawString }
-                           reference={ this.inputRef }
+                <TextArea textChangeHandler={ (e) => this.rawChange(e.target.value) }
+                          raw={ this.state.raw }
+                          rawString={ this.state.rawString }
+                          reference={ this.inputRef }
                 />
                 { this.renderButtons() }
             </div>

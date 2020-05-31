@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {Input} from "reactstrap";
 import RawSnippet from "./rawSnippet";
 
-class TextInput extends Component {
+class TextArea extends Component {
 
     constructor(props) {
         super(props);
@@ -27,4 +27,4 @@ class TextInput extends Component {
 
 }
 
-export default TextInput;
+export default TextArea;

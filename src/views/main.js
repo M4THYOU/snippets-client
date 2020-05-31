@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 
 // Components
-import {apiGet, isAuthenticated} from "../api/functions";
-import {EndpointsEnum} from "../api/endpoints";
+import SearchBar from "../components/latex-editor/searchBar";
+import SnippetCard from "../components/snippets/snippet-card";
 
 // Functions/Enums
-import SnippetCard from "../components/snippets/snippet-card";
 import {chunkArray} from "../utils/utils";
+import {apiGet, isAuthenticated} from "../api/functions";
+import {EndpointsEnum} from "../api/endpoints";
 
 class Main extends Component {
 
@@ -91,12 +92,22 @@ class Main extends Component {
         });
     }
 
+    searchHandler(raw) {
+        console.log('searching!!');
+        console.log(raw);
+
+        // TODO: post request to search endpoint HERE.
+
+    }
+
     render() {
         if (this.state.isLoaded) {
             return (
                 <Container>
                     <h1>My Snippets</h1>
                     <Link to="/new">New Snippet</Link>
+                    <hr/>
+                    <SearchBar searchHandler={ (raw) => this.searchHandler(raw) } />
                     <hr/>
                     <Container>
                         {this.renderSnippets()}
