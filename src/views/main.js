@@ -96,8 +96,15 @@ class Main extends Component {
         console.log('searching!!');
         console.log(raw);
 
-        // TODO: post request to search endpoint HERE.
-
+        const query = {query: JSON.stringify(raw)};
+        apiGet(EndpointsEnum.SEARCH, null, query)
+            .then(res => res.json())
+            .then(result => {
+                console.log(result);
+            })
+            .catch(e => {
+                console.error(e);
+            })
     }
 
     render() {
