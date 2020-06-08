@@ -23,15 +23,33 @@ class NavigationBar extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 const isLoaded = true;
-                this.setState({isAuthorized, isLoaded});
+                const user = data.user;
+
+                let name = null;
+                if (user) {
+                    name = user.first_name + ' ' + user.last_name || null;
+                }
+
+                this.setState({isAuthorized, isLoaded, name});
             });
     }
 
     logoutHandler() {
         apiLogout();
 
+    }
+
+    renderName() {
+        if (this.state.name) {
+            return (
+                <NavItem>
+                    <NavLink href="/" >{ this.state.name }</NavLink>
+                </NavItem>
+            );
+        }
     }
 
     renderNavItems() {
@@ -43,9 +61,7 @@ class NavigationBar extends Component {
             return (
                 <Collapse isOpen={true} navbar>
                     <Nav className="ml-auto" navbar>
-                        <NavItem>
-                            <NavLink href="/" >My Snippets</NavLink>
-                        </NavItem>
+                        { this.renderName() }
                         <NavItem>
                             <NavLink onClick={ () => this.logoutHandler() } href="/login" >Logout</NavLink>
                         </NavItem>

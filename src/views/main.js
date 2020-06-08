@@ -10,6 +10,7 @@ import SnippetCard from "../components/snippets/snippet-card";
 import {chunkArray} from "../utils/utils";
 import {apiGet, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
+import {SEARCH_LIMIT} from "../api/constants";
 
 class Main extends Component {
 
@@ -25,7 +26,8 @@ class Main extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 if (isAuthorized) {
                     this.setState({isLoaded: true});
                     this.getSnippets();
@@ -37,6 +39,19 @@ class Main extends Component {
 
     getSnippets() {
         apiGet(EndpointsEnum.SNIPPETS)
+            .then(res => res.json())
+            .then(result => {
+                const snippets = result.data;
+                this.setState({snippets});
+            })
+            .catch(e => {
+                console.error(e);
+            })
+    }
+
+    searchHandler(raw) {
+        const query = {query: JSON.stringify(raw), limit: SEARCH_LIMIT};
+        apiGet(EndpointsEnum.SEARCH, null, query)
             .then(res => res.json())
             .then(result => {
                 const snippets = result.data;
@@ -82,7 +97,13 @@ class Main extends Component {
     }
 
     renderSnippets() {
-        const snipRows = chunkArray(this.snippetsPerRow, this.state.snippets);
+        const snippets = this.state.snippets;
+        if (snippets.length === 0) {
+            return (
+                <p>No snippets found.</p>
+            );
+        }
+        const snipRows = chunkArray(this.snippetsPerRow, snippets);
         return snipRows.map((row, i) => {
             return (
                 <Row className="margin-bottom" key={ 'row_' + i }>
@@ -92,32 +113,17 @@ class Main extends Component {
         });
     }
 
-    searchHandler(raw) {
-        console.log('searching!!');
-        console.log(raw);
-
-        const query = {query: JSON.stringify(raw)};
-        apiGet(EndpointsEnum.SEARCH, null, query)
-            .then(res => res.json())
-            .then(result => {
-                console.log(result);
-            })
-            .catch(e => {
-                console.error(e);
-            })
-    }
-
     render() {
         if (this.state.isLoaded) {
             return (
                 <Container>
-                    <h1>My Snippets</h1>
+                    <h1>All Snippets</h1>
                     <Link to="/new">New Snippet</Link>
                     <hr/>
                     <SearchBar searchHandler={ (raw) => this.searchHandler(raw) } />
                     <hr/>
                     <Container>
-                        {this.renderSnippets()}
+                        { this.renderSnippets() }
                     </Container>
                 </Container>
             );

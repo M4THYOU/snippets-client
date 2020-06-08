@@ -6,6 +6,7 @@ export const LatexStringsEnum = Object.freeze({
     // Simple notation
     'ELEMENT_OF': '\\in',
     'REAL_SET': '\\Bbb R',
+    'R^n': '\\Bbb R^n',
     'LESS': '<',
     'LESS_OR_EQUAL': '\\leq',
     'MORE': '>',

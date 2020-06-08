@@ -32,9 +32,11 @@ class EditSnippet extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 if (isAuthorized) {
-                    this.setState({isLoaded: true});
+                    const user = data.user;
+                    this.setState({isLoaded: true, user});
                     this.getSnippet();
                 } else {
                     this.props.history.push('/login');
@@ -48,6 +50,12 @@ class EditSnippet extends Component {
             .then(res => res.json())
             .then(result => {
                 const snippet = result.data;
+                const snippetUid = +snippet.created_by_uid;
+                const uid = +this.state.user.id
+                if (snippetUid !== uid) {
+                    this.props.history.push('/');
+                }
+
                 snippet['raw'] = JSON.parse(snippet.raw).raw_snippet;
                 snippet['shouldRenderForm'] = true;
                 this.setState(snippet);

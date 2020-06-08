@@ -130,7 +130,7 @@ export async function isAuthenticated() {
     return apiGet(EndpointsEnum.AUTHENTICATE)
         .then(res => res.json())
         .then(result => {
-            return result.authorized;
+            return result;
         })
         .catch(e => {
             console.error(e);

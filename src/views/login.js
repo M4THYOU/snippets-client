@@ -22,7 +22,8 @@ class Login extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 if (isAuthorized) {
                     this.props.history.push('/');
                 } else {
@@ -44,7 +45,9 @@ class Login extends Component {
 
         const isValidLogin = await apiLogin(this.state.email, this.state.password);
         if (isValidLogin) {
-            this.props.history.push('/');
+            // because we need to force page refresh to update header values.
+            window.location.href = '/';
+            // this.props.history.push('/');
         } else {
             this.loginError();
         }

@@ -25,7 +25,8 @@ class Register extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 if (isAuthorized) {
                     this.props.history.push('/');
                 } else {

@@ -28,9 +28,11 @@ class NewSnippet extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 if (isAuthorized) {
-                    this.setState({isLoaded: true});
+                    const user = data.user;
+                    this.setState({isLoaded: true, user});
                 } else {
                     this.props.history.push('/login');
                 }
@@ -160,7 +162,7 @@ class NewSnippet extends Component {
 
                         <hr/>
                         <h2 className="secondary-header">Notes</h2>
-                        {renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i))}
+                        { renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i), +this.state.user.id) }
                         {this.renderNoteForm()}
                     </Container>
 

@@ -9,6 +9,7 @@ class NoteCard extends Component {
 
         this.state = {
             deleteHandler: props.deleteHandler,
+            isMine: props.isMine,
             isHovered: false
         };
 
@@ -26,7 +27,7 @@ class NoteCard extends Component {
     }
 
     renderX() {
-        if (this.state.isHovered) {
+        if (this.state.isHovered && this.state.isMine) {
             return (
                 // eslint-disable-next-line no-script-url,jsx-a11y/anchor-is-valid
                 <a className="box-close" id="box-close"

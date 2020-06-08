@@ -4,7 +4,6 @@ import {
     InputGroupAddon,
     Button,
     Input,
-    Form,
     InputGroupButtonDropdown,
     DropdownToggle,
     DropdownMenu,
@@ -15,7 +14,7 @@ import {
 import RawSnippet from "./partials/rawSnippet";
 
 // Functions
-import {rawToRawString, parseRawString, insertIntoString} from "./utils/utils";
+import {parseRawString, insertIntoString} from "./utils/utils";
 import {LatexStringsEnum} from "./utils/latexStrings";
 import TextButton from "./partials/textButton";
 
@@ -134,7 +133,7 @@ class SearchBar extends Component {
 
     render() {
         return (
-            <Form>
+            <div>
                 <RawSnippet raw={ this.state.raw } />
                 <InputGroup>
                     <InputGroupButtonDropdown
@@ -157,7 +156,7 @@ class SearchBar extends Component {
                     </InputGroupAddon>
                 </InputGroup>
                 { this.renderButtons() }
-            </Form>
+            </div>
         );
     }
 

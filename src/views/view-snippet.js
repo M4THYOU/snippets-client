@@ -34,9 +34,11 @@ class ViewSnippet extends Component {
 
     componentDidMount() {
         isAuthenticated()
-            .then(isAuthorized => {
+            .then(data => {
+                const isAuthorized = data.authorized;
                 if (isAuthorized) {
-                    this.setState({isLoaded: true});
+                    const user = data.user;
+                    this.setState({isLoaded: true, user});
                     this.getSnippet();
                     this.getNotes();
                 } else {
@@ -59,6 +61,8 @@ class ViewSnippet extends Component {
             .then(result => {
                 const snippet = result.data;
                 snippet['raw'] = JSON.parse(snippet.raw).raw_snippet;
+                const isMine = +snippet.created_by_uid === +this.state.user.id;
+                snippet['isMine'] = isMine;
                 this.setState(snippet);
             })
             .catch(e => {
@@ -170,22 +174,40 @@ class ViewSnippet extends Component {
         }
     }
 
+    renderDeleteButton() {
+        // if (!! this.state.snippet && (this.state.user.id === this.state.snippet.created_by_uid)) {
+        if (this.state.isMine) {
+            return (
+                <Button outline color="danger" className="snippet-button"
+                        onClick={(e) => this.deleteSnippetHandler(e)}>Delete</Button>
+            );
+        }
+    }
+
+    renderEditButton() {
+        // if (!! this.state.snippet && (this.state.user.id === this.state.snippet.created_by_uid)) {
+        if (this.state.isMine) {
+            return (
+                <Button outline color="info" className="snippet-button"
+                        onClick={(e) => this.editSnippetHandler(e)}>Edit</Button>
+            );
+        }
+    }
+
     render() {
         if (this.state.isLoaded) {
             return (
                 <Container>
                     <div>
-                        <Button outline color="danger" className="snippet-button"
-                                onClick={(e) => this.deleteSnippetHandler(e)}>Delete</Button>
-                        <Button outline color="info" className="snippet-button"
-                                onClick={(e) => this.editSnippetHandler(e)}>Edit</Button>
+                        { this.renderDeleteButton() }
+                        { this.renderEditButton() }
                         {this.renderTitle()}
                     </div>
                     <hr/>
                     <RawSnippet raw={this.state.raw}/>
                     <hr/>
                     <h2 className="secondary-header">Notes</h2>
-                    {renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i))}
+                    { renderNotes(this.notesPerRow, this.state.notes, (e, i) => this.deleteNoteHandler(e, i), this.state.user.id) }
                     {this.renderNoteForm()}
                 </Container>
             );
