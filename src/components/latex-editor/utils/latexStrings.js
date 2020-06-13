@@ -13,6 +13,7 @@ export const LatexStringsEnum = Object.freeze({
     'MORE_OR_EQUAL': '\\geq',
     'PIPE': '\\mid',
     'CURLY': '\\{\\}',
+    'NOT_EQUAL': '\\neq',
 
     // Dots
     'VERT_DOTS': '\\vdots',

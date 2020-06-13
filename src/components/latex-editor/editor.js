@@ -6,7 +6,7 @@ import TextArea from "./partials/textArea";
 
 // Utils
 import {LatexStringsEnum} from "./utils/latexStrings"
-import {insertIntoString, parseRawString, rawToRawString} from "./utils/utils";
+import {insertAtCursor, insertIntoString, parseRawString, rawToRawString} from "./utils/utils";
 
 class Editor extends Component {
 
@@ -36,57 +36,25 @@ class Editor extends Component {
         this.setState({rawString: val, raw});
     }
 
-    isMathAtIndex(index, s) {
-        const arr = parseRawString(s);
-
-        let sLen = s.length;
-        let currentIsMath = false;
-        for (let i = 0; i < arr.length; i++) {
-            const isMath = arr[i].isMath;
-            const value = arr[i].value;
-            let valLen = value.length;
-
-            if (isMath) {
-                valLen += 2;
-            }
-
-            if (sLen <= valLen) {
-                return isMath;
-            }
-
-            currentIsMath = isMath;
-            sLen -= valLen;
-        }
-
-        return currentIsMath;
-    }
-
-    insertAtCursor(oldVal, newVal) {
-        const index = this.inputRef.current.selectionStart
-        let newString;
-        const isAtEnd = (index === 0) || (index === oldVal.length);
-
-        if (oldVal.slice(-1) === '`' && isAtEnd) {
-            oldVal = oldVal.substring(0, oldVal.length-1);
-            newVal = newVal.substring(1);
-        }
-
-        if (index === 0) {
-            newString = oldVal + newVal;
-        } else {
-            const isMath = this.isMathAtIndex(index, oldVal);
-            if (isMath) {
-                newVal = newVal.slice(1,-1);
-            }
-            newString = insertIntoString(oldVal, index, newVal);
-        }
+    insertion(oldVal, newVal) {
+        const index = this.inputRef.current.selectionStart;
+        const newString = insertAtCursor(oldVal, newVal, index);
 
         this.rawChange(newString);
+
+        let insertAt = newString.length
+        if (index > 0) {
+            insertAt = index + newVal.length - 2;
+        }
+        this.inputRef.current.focus();
+        setTimeout(() => {
+            this.inputRef.current.selectionStart = this.inputRef.current.selectionEnd = insertAt;
+        }, 1);
     }
 
     buttonClickHandler(latex) {
         const oldVal = this.state.rawString;
-        this.insertAtCursor(oldVal, latex);
+        this.insertion(oldVal, latex);
     }
 
     renderButtons() {
