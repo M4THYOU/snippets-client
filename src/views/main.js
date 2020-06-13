@@ -20,6 +20,7 @@ class Main extends Component {
         super(props);
         this.state = {
             isLoaded: false,
+            isSearchDone: false,
             snippets: []
         };
     }
@@ -42,7 +43,8 @@ class Main extends Component {
             .then(res => res.json())
             .then(result => {
                 const snippets = result.data;
-                this.setState({snippets});
+                const isSearchDone = true;
+                this.setState({snippets, isSearchDone});
             })
             .catch(e => {
                 console.error(e);
@@ -51,11 +53,13 @@ class Main extends Component {
 
     searchHandler(raw) {
         const query = {query: JSON.stringify(raw), limit: SEARCH_LIMIT};
+
+        this.setState({isSearchDone: false});
         apiGet(EndpointsEnum.SEARCH, null, query)
             .then(res => res.json())
             .then(result => {
                 const snippets = result.data;
-                this.setState({snippets});
+                this.setState({snippets, isSearchDone: true});
             })
             .catch(e => {
                 console.error(e);
@@ -98,7 +102,14 @@ class Main extends Component {
 
     renderSnippets() {
         const snippets = this.state.snippets;
-        if (snippets.length === 0) {
+
+        if (!this.state.isSearchDone) {
+            return (
+                <p>Loading...</p>
+            );
+        }
+
+        if (snippets.length === 0 && this.state.isSearchDone) {
             return (
                 <p>No snippets found.</p>
             );
