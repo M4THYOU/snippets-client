@@ -58,7 +58,7 @@ class Main extends Component {
         apiGet(EndpointsEnum.SEARCH, null, query)
             .then(res => res.json())
             .then(result => {
-                const snippets = result.data
+                const snippets = result.data;
                 this.setState({snippets, isSearchDone: true});
             })
             .catch(e => {
