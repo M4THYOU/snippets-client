@@ -10,8 +10,8 @@ export function buildSnippet(snippet) {
     return JSON.stringify(rawJson);
 }
 
-export function isValidSnippetForm(title, type, course, raw) {
-    if (!title) {
+export function isValidSnippetForm(rawTitle, type, course, raw) {
+    if (rawTitle.length === 0) {
         alert('Please enter a title.');
         return false;
     }

@@ -13,10 +13,9 @@ class SnippetCard extends Component {
             course: props.course,
             created_at: props.created_at,
             id: props.id,
-            is_title_math: props.is_title_math,
             raw: JSON.parse(props.raw),
             type: props.type,
-            title: props.title,
+            title: JSON.parse(props.title),
             updated_at: props.updated_at,
         };
 
@@ -27,19 +26,7 @@ class SnippetCard extends Component {
     }
 
     renderTitle () {
-        if (this.state.is_title_math) {
-            const math = [{
-                isMath: true,
-                value: this.state.title
-            }];
-            return (
-                <RawSnippet raw={ math } />
-            );
-        } else {
-            return (
-                <CardTitle>{ this.state.title }</CardTitle>
-            );
-        }
+        return (<RawSnippet raw={ this.state.title.raw_snippet }/>);
     }
 
     render() {

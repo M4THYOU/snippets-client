@@ -7,6 +7,8 @@ import Editor from "./latex-editor/editor";
 // API
 import { apiGet } from '../api/functions';
 import {EndpointsEnum} from "../api/endpoints";
+import TextTitle from "./latex-editor/partials/textTitle";
+import {parseRawString} from "./latex-editor/utils/utils";
 
 class SnippetForm extends Component {
 
@@ -19,13 +21,18 @@ class SnippetForm extends Component {
             title = '`' + title + '`';
         }
 
+        let initTitle = '';
+        if (typeof this.props.title !== 'undefined') {
+            initTitle = parseRawString(this.props.title);
+        }
+
         this.state = {
             isEdit,
             title,
+            rawTitle: initTitle,
             type: this.props.type || '',
             course: this.props.course || '',
             raw: this.props.raw || [],
-            isTitleMath: !!this.props.isTitleMath,
             types: [],
             courses: [],
             doneHandler: props.handler
@@ -77,11 +84,16 @@ class SnippetForm extends Component {
         this.setState({raw});
     }
 
+    rawTitleChange(title) {
+        const rawTitle = parseRawString(title);
+        this.setState({title, rawTitle});
+    }
+
     formSubmitBuilder(e) {
         e.preventDefault();
 
         const values = {
-            title: this.state.title,
+            rawTitle: this.state.rawTitle,
             type: this.state.type,
             course: this.state.course,
             raw: this.state.raw,
@@ -128,7 +140,7 @@ class SnippetForm extends Component {
                     <Col md={4}>
                         <FormGroup>
                             <Label for="title">Title</Label>
-                            <Input type="text" value={ this.state.title } onChange={ (e) => this.inputChange(e, 'title')} name="title" id="title" />
+                            <TextTitle name="title" id="title" value={ this.state.title } changeHandler={ (val) => this.rawTitleChange(val) } />
                         </FormGroup>
                     </Col>
                     <Col md={4}>

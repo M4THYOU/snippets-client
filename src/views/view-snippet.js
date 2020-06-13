@@ -9,6 +9,7 @@ import {apiPost, apiDelete, apiGet, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 import NoteForm from "../components/noteForm";
 import {isValidNoteForm, rawToTextDBField, renderNotes} from "../utils/notes";
+import {rawToRawString} from "../components/latex-editor/utils/utils";
 
 class ViewSnippet extends Component {
 
@@ -38,7 +39,7 @@ class ViewSnippet extends Component {
                 const isAuthorized = data.authorized;
                 if (isAuthorized) {
                     const user = data.user;
-                    this.setState({isLoaded: true, user});
+                    this.setState({user});
                     this.getSnippet();
                     this.getNotes();
                 } else {
@@ -63,6 +64,7 @@ class ViewSnippet extends Component {
                 snippet['raw'] = JSON.parse(snippet.raw).raw_snippet;
                 const isMine = +snippet.created_by_uid === +this.state.user.id;
                 snippet['isMine'] = isMine;
+                snippet['isLoaded'] = true;
                 this.setState(snippet);
             })
             .catch(e => {
@@ -88,7 +90,6 @@ class ViewSnippet extends Component {
         apiDelete(EndpointsEnum.SNIPPETS, this.state.id)
             .then(res => res.json())
             .then(result => {
-                console.log(result);
                 this.props.history.push('/');
             })
             .catch(e => {
@@ -159,19 +160,10 @@ class ViewSnippet extends Component {
     }
 
     renderTitle () {
-        if (this.state.is_title_math) {
-            const math = [{
-                isMath: true,
-                value: this.state.title
-            }];
-            return (
-                <h1><RawSnippet raw={ math } /></h1>
-            );
-        } else {
-            return (
-                <h1>{ this.state.title }</h1>
-            );
-        }
+        const jsonTitle = JSON.parse(this.state.title).raw_snippet;
+        return (
+            <h1><RawSnippet raw={ jsonTitle } /></h1>
+        );
     }
 
     renderDeleteButton() {

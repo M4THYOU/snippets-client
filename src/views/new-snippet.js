@@ -49,30 +49,24 @@ class NewSnippet extends Component {
 
     createSnippetHandler(e, values) {
         e.preventDefault();
-        const title = values.title;
+        const rawTitle = values.rawTitle;
         const type = values.type;
         const course = values.course;
         const raw = values.raw;
 
-        const validForm = isValidSnippetForm(title, type, course, raw);
+        const validForm = isValidSnippetForm(rawTitle, type, course, raw);
         if (!validForm) {
             return;
         }
 
         const snippet = buildSnippet(raw);
+        const title = buildSnippet(rawTitle);
         let data = {
             title,
             snippet_type: type,
             course,
             raw: snippet,
-            is_title_math: 0
         };
-
-        // if title is wrapped in backticks, it must be math.
-        if (title[0] === "`" && title[title.length - 1] === "`") {
-            data.title = data.title.substring(1, data.title.length-1);
-            data.is_title_math = 1;
-        }
 
         apiPost(EndpointsEnum.SNIPPETS, data)
             .then(res => {

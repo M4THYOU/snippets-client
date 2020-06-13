@@ -93,6 +93,12 @@ class SearchBar extends Component {
         this.insertAtCursor(oldVal, latex);
     }
 
+    searchKeyDown(e) {
+        if (e.key === 'Enter') {
+            this.searchHandler(e);
+        }
+    }
+
     searchHandler(e) {
         e.preventDefault();
         const raw = this.state.raw;
@@ -150,6 +156,7 @@ class SearchBar extends Component {
                            value={ this.state.rawString }
                            onChange={ (e) => this.rawChange(e.target.value) }
                            innerRef={ this.inputRef }
+                           onKeyDown={ (e) => this.searchKeyDown(e) }
                     />
                     <InputGroupAddon addonType="append">
                         <Button color="primary" onClick={ (e) => this.searchHandler(e) }>Find Snippet</Button>

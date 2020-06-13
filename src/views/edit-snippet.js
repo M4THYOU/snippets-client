@@ -8,6 +8,7 @@ import SnippetForm from "../components/snippetForm";
 import {EndpointsEnum} from "../api/endpoints";
 import {buildSnippet, isValidSnippetForm} from "../utils/snippets";
 import {apiGet, apiPatch, isAuthenticated} from "../api/functions";
+import {rawToRawString} from "../components/latex-editor/utils/utils";
 
 class EditSnippet extends Component {
 
@@ -20,7 +21,6 @@ class EditSnippet extends Component {
             id: props.match.params.id,
             course: null,
             created_at: null,
-            is_title_math: 0,
             notes: [],
             raw: [],
             snippet_type: null,
@@ -58,6 +58,8 @@ class EditSnippet extends Component {
 
                 snippet['raw'] = JSON.parse(snippet.raw).raw_snippet;
                 snippet['shouldRenderForm'] = true;
+
+                snippet['title'] = rawToRawString(JSON.parse(snippet.title).raw_snippet);
                 this.setState(snippet);
             })
             .catch(e => {
@@ -67,28 +69,23 @@ class EditSnippet extends Component {
 
     editSnippetHandler(e, values) {
         e.preventDefault();
-        const title = values.title;
+        const rawTitle = values.rawTitle;
         const type = values.type;
         const course = values.course;
         const raw = values.raw;
 
-        const validForm = isValidSnippetForm(title, type, course, raw);
+        const validForm = isValidSnippetForm(rawTitle, type, course, raw);
         if (!validForm) {
             return;
         }
         const snippet = buildSnippet(raw);
+        const title = buildSnippet(rawTitle);
         let data = {
             title,
             snippet_type: type,
             course,
             raw: snippet,
-            is_title_math: 0
         };
-        // if title is wrapped in backticks, it must be math.
-        if (title[0] === "`" && title[title.length - 1] === "`") {
-            data.title = data.title.substring(1, data.title.length-1);
-            data.is_title_math = 1;
-        }
 
         apiPatch(EndpointsEnum.SNIPPETS, this.state.id, data)
             .then(res => {
@@ -126,7 +123,6 @@ class EditSnippet extends Component {
             return (
                 <SnippetForm handler={ (e, values) => this.editSnippetHandler(e, values) }
                              title={ this.state.title }
-                             isTitleMath={ this.state.is_title_math }
                              type={ this.state.snippet_type }
                              course={ this.state.course }
                              raw={ this.state.raw }
