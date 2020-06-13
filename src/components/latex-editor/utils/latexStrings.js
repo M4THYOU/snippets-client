@@ -30,9 +30,12 @@ export const LatexStringsEnum = Object.freeze({
     'V_TO_V': '\\vec{v}_1,\\ldots,\\vec{v}_k',
     'V_PLUS_TO_V': '\\vec{v}_1+\\cdots+\\vec{v}_k',
     'SINGLE_COL_MATRIX': '\\begin{bmatrix} 0 \\\\ 0 \\\\ 0 \\end{bmatrix}',
+    'X_ONE_TO_X_N': '\\begin{bmatrix} x_1 \\\\ \\vdots \\\\ x_n \\end{bmatrix}',
+    'Y_ONE_TO_Y_N': '\\begin{bmatrix} y_1 \\\\ \\vdots \\\\ y_n \\end{bmatrix}',
 
     // Greek,
     'PI': '\\pi',
-    'SUMMATION': '\\Sigma',
+    'SIGMA': '\\Sigma',
+    'SUMMATION': '\\sum_{n=1}^{\\infty}',
     'PRODUCT': '\\Pi'
 });
