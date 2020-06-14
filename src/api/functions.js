@@ -1,4 +1,4 @@
-import apiUrlBase from './config';
+import apiUrlBase, {ApisEnum} from './config';
 import {EndpointsEnum} from "./endpoints";
 
 const jwtStorageKey = 'jwt';
@@ -57,12 +57,16 @@ function authHeader() {
     const jwt = localStorage.getItem(jwtStorageKey);
     return jwt || '';
 }
+function corsHeader() {
+    return ApisEnum.deploy;
+}
 
 export function apiGet(endpoint, id, params) {
     const url = buildUrl(endpoint, id, params);
     return fetch(url, {
         headers: {
-            'Authorization': authHeader()
+            'Authorization': authHeader(),
+            'Access-Control-Allow-Origin': corsHeader()
         }
     });
 }
@@ -76,7 +80,8 @@ export function apiPost(endpoint, data) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': authHeader()
+            'Authorization': authHeader(),
+            'Access-Control-Allow-Origin': corsHeader()
         },
     })
 }
@@ -90,7 +95,8 @@ export function apiPatch(endpoint, id, data) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': authHeader()
+            'Authorization': authHeader(),
+            'Access-Control-Allow-Origin': corsHeader()
         },
     })
 }
@@ -100,7 +106,8 @@ export function apiDelete(endpoint, id) {
     return fetch(url, {
         method: 'DELETE',
         headers: {
-            'Authorization': authHeader()
+            'Authorization': authHeader(),
+            'Access-Control-Allow-Origin': corsHeader()
         }
     })
 }
