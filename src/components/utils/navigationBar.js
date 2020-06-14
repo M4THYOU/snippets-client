@@ -87,8 +87,8 @@ class NavigationBar extends Component {
 
     render() {
         return (
-            <div>
-                <Navbar color="light" light expand="md">
+            <div className="margin-bottom">
+                <Navbar className="navbar-theme" expand="md">
                     <NavbarBrand href="/">Snippets</NavbarBrand>
                     { this.renderNavItems() }
                 </Navbar>

@@ -35,6 +35,7 @@ class SnippetForm extends Component {
             raw: this.props.raw || [],
             types: [],
             courses: [],
+            isSubmitting: false,
             doneHandler: props.handler
         };
     }
@@ -91,6 +92,8 @@ class SnippetForm extends Component {
 
     formSubmitBuilder(e) {
         e.preventDefault();
+
+        this.setState({isSubmitting: true});
 
         const values = {
             rawTitle: this.state.rawTitle,
@@ -163,7 +166,7 @@ class SnippetForm extends Component {
 
                 { this.renderEditor() }
                 <br />
-                <Button color="primary" onClick={ (e) => this.formSubmitBuilder(e) }>{ this.renderSaveValue() }</Button>
+                <Button color="primary" disabled={ this.state.isSubmitting } onClick={ (e) => this.formSubmitBuilder(e) }>{ this.renderSaveValue() }</Button>
             </div>
         );
     }

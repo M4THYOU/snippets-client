@@ -41,12 +41,6 @@ class NoteForm extends Component {
                 <Button color="success" onClick={ (e) => this.formSubmitBuilder(e) }>Add Note</Button>
             </div>
         );
-        /*
-         <FormGroup row>
-         <Label for="raw" sm={2}>Note</Label>
-         <Input type="textarea" value={ this.state.text } onChange={ (e) => this.inputChange(e, 'text')} name="raw" id="raw" />
-         </FormGroup>
-         */
     }
 
 }

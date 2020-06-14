@@ -44,7 +44,7 @@ class Editor extends Component {
 
         let insertAt = newString.length
         if (index > 0) {
-            insertAt = index + newVal.length - 2;
+            insertAt = index + newVal.length - 1;
         }
         this.inputRef.current.focus();
         setTimeout(() => {

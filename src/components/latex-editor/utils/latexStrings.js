@@ -4,6 +4,7 @@ export const LatexStringsEnum = Object.freeze({
     'Y': 'y',
 
     // Simple notation
+    'FRACTION': '\\frac{x}{y}',
     'ELEMENT_OF': '\\in',
     'REAL_SET': '\\Bbb R',
     'R^n': '\\Bbb R^n',
@@ -14,8 +15,13 @@ export const LatexStringsEnum = Object.freeze({
     'PIPE': '\\mid',
     'CURLY': '\\{\\}',
     'NOT_EQUAL': '\\neq',
+    'SQUARE_ROOT': '\\sqrt{x}',
+    'CROSS': '\\times',
+    'PROJECTION': 'proj_{\\vec{v}}{\\vec{u}}',
+    'PROJECTION_EQUATION': '\\frac{\\vec{u}\\cdot\\vec{v}}{||\\vec{v}||^2}\\vec{v}',
 
     // Dots
+    'DOT': '\\cdot',
     'VERT_DOTS': '\\vdots',
     'UP_HORIZ_DOTS': '\\cdots',
     'DOWN_HORIZ_DOTS': '\\ldots',
