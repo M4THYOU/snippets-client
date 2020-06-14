@@ -89,7 +89,7 @@ class NavigationBar extends Component {
         return (
             <div className="margin-bottom">
                 <Navbar className="navbar-theme" expand="md">
-                    <NavbarBrand href="/"><strong>Snippets</strong></NavbarBrand>
+                    <NavbarBrand href="/"><p>Snippets</p></NavbarBrand>
                     { this.renderNavItems() }
                 </Navbar>
             </div>
