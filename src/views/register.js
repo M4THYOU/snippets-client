@@ -14,12 +14,12 @@ class Register extends Component {
         this.state = {
             isLoaded: false,
             error: '',
-            email: 'mathyou.wolfe@gmail.com',
-            firstName: 'Matthew',
-            lastName: 'Wolfe',
-            password: 'password',
-            confirmPassword: 'password',
-            doesAgree: true
+            email: '',
+            firstName: '',
+            lastName: '',
+            password: '',
+            confirmPassword: '',
+            doesAgree: false
         };
     }
 
