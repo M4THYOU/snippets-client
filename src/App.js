@@ -27,6 +27,7 @@ function App() {
             <Route exact path="/new" component={ NewSnippet } />
             <Route exact path="/snippet/:id" component={ ViewSnippet } />
             <Route exact path="/snippet/:id/edit" component={ EditSnippet } />
+
             <Redirect to="/" />
         </Switch>
     </div>

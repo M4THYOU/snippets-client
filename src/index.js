@@ -5,10 +5,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
+import CanvasView from "./note-taking/views/canvasView";
 
 ReactDOM.render(
     <BrowserRouter>
-        <App />
+        <Switch>
+            <Route exact path="/canvas" component={ CanvasView } />
+            <App />
+        </Switch>
     </BrowserRouter>,
     document.getElementById('root')
 );

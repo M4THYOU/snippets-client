@@ -61,6 +61,9 @@ class NavigationBar extends Component {
             return (
                 <Collapse isOpen={true} navbar>
                     <Nav className="ml-auto" navbar>
+                        <NavItem>
+                            <NavLink href="/canvas">Canvas</NavLink>
+                        </NavItem>
                         { this.renderName() }
                         <NavItem>
                             <NavLink onClick={ () => this.logoutHandler() } href="/login" >Logout</NavLink>

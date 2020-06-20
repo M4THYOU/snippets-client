@@ -1,0 +1,56 @@
+html, body, #root, #app, #app>div {
+    height: 100%
+}
+
+canvas {
+    border: 1px solid #333;
+    background-color: white;
+}
+
+.wrapper {
+    display: flex;
+    height: 100%;
+}
+
+.tools {
+    padding: 10px 4px 10px 4px;
+    text-align: center;
+    background-color: darkslategray;
+    width: 15%;
+    height: 100%;
+}
+
+.canvas-div {
+    width: 100%;
+    height: 100%;
+}
+
+.helpers {
+    width: 10%;
+    height: 100%;
+    background-color: #282c34;
+}
+
+.tools .button {
+    border: 0;
+    margin: 1px;
+    height: 50px;
+    width: 48%;
+    border-radius: 5px;
+    background-color: lightgray;
+}
+.helpers .button {
+    border: 0;
+    margin: 1px;
+    height: 50px;
+    width: 98%;
+    border-radius: 5px;
+    background-color: lightgray;
+}
+.button:hover {
+    background-color: #e6e6e6;
+}
+#colorPicker {
+    margin: 1px;
+}
+

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {Button} from "reactstrap";
 import 'katex/dist/katex.min.css';
-import TextButton from "./textButton";
 
 class TextButtonGroup extends Component {
 
