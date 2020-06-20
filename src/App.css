@@ -85,3 +85,14 @@ a.box-close{
 .navbar-theme a {
   color: white;
 }
+
+.keyboard-container {
+  text-align: left;
+}
+.buttongroup-wrapper {
+  display: inline-block;
+}
+
+.sub-buttons {
+  width: 15em;
+}

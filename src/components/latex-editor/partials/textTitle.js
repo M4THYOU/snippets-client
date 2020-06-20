@@ -3,9 +3,6 @@ import {
     Input,
 } from 'reactstrap';
 
-// Functions
-import {parseRawString} from "../utils/utils";
-
 class TextTitle extends Component {
 
     constructor(props) {

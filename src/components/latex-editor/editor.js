@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 
 // Components
-import TextButton from "./partials/textButton";
 import TextArea from "./partials/textArea";
+import Keyboard from "./keyboard/keyboard";
 
 // Utils
-import {LatexStringsEnum} from "./utils/latexStrings"
-import {insertAtCursor, insertIntoString, parseRawString, rawToRawString} from "./utils/utils";
+import {insertAtCursor, parseRawString, rawToRawString} from "./utils/utils";
 
 class Editor extends Component {
 
@@ -57,15 +56,6 @@ class Editor extends Component {
         this.insertion(oldVal, latex);
     }
 
-    renderButtons() {
-        return Object.keys(LatexStringsEnum).map((key, i) => {
-            return <TextButton handler={ (val) => this.buttonClickHandler(val) }
-                               latex={ LatexStringsEnum[key] }
-                               key={ i }
-            />
-        })
-    }
-
     render() {
         return (
             <div>
@@ -74,7 +64,7 @@ class Editor extends Component {
                           rawString={ this.state.rawString }
                           reference={ this.inputRef }
                 />
-                { this.renderButtons() }
+                <Keyboard handler={ (val) => this.buttonClickHandler(val) } />
             </div>
         );
     }

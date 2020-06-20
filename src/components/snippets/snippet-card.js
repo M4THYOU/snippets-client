@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Button, CardTitle, CardSubtitle, CardHeader, CardBody } from 'reactstrap';
+import { Card, Button, CardSubtitle, CardHeader, CardBody } from 'reactstrap';
 
 // Components
 import RawSnippet from "../latex-editor/partials/rawSnippet";

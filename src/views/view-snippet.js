@@ -9,7 +9,6 @@ import {apiPost, apiDelete, apiGet, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
 import NoteForm from "../components/noteForm";
 import {isValidNoteForm, rawToTextDBField, renderNotes} from "../utils/notes";
-import {rawToRawString} from "../components/latex-editor/utils/utils";
 
 class ViewSnippet extends Component {
 

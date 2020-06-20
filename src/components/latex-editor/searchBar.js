@@ -12,11 +12,10 @@ import {
 
 // Components
 import RawSnippet from "./partials/rawSnippet";
+import Keyboard from "./keyboard/keyboard";
 
 // Functions
-import {parseRawString, insertIntoString, insertAtCursor} from "./utils/utils";
-import {LatexStringsEnum} from "./utils/latexStrings";
-import TextButton from "./partials/textButton";
+import {parseRawString, insertAtCursor} from "./utils/utils";
 
 class SearchBar extends Component {
 
@@ -85,14 +84,11 @@ class SearchBar extends Component {
     }
 
     // Rendering
-    renderButtons() {
+    renderKeyboard() {
         if (this.state.isKeyboardShown) {
-            return Object.keys(LatexStringsEnum).map((key, i) => {
-                return <TextButton handler={(val) => this.buttonClickHandler(val)}
-                                   latex={LatexStringsEnum[key]}
-                                   key={i}
-                />
-            });
+            return (
+                <Keyboard handler={ (val) => this.buttonClickHandler(val) } />
+            );
         }
     }
 
@@ -129,7 +125,7 @@ class SearchBar extends Component {
                         <Button color="primary" onClick={ (e) => this.searchHandler(e) }>Find Snippet</Button>
                     </InputGroupAddon>
                 </InputGroup>
-                { this.renderButtons() }
+                { this.renderKeyboard() }
             </div>
         );
     }
