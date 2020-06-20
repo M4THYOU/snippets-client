@@ -87,12 +87,17 @@ a.box-close{
 }
 
 .keyboard-container {
+  margin-top: 1em;
   text-align: left;
-}
-.buttongroup-wrapper {
-  display: inline-block;
 }
 
 .sub-buttons {
   width: 15em;
+}
+
+.btn.no-hover:hover {
+  /* here copy default .btn class styles */
+  background-color: inherit !important;
+  color: inherit !important;
+  /* or something like that */
 }

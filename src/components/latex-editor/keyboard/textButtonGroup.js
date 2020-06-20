@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {Button} from "reactstrap";
 import 'katex/dist/katex.min.css';
 import TextButton from "./textButton";
-import {LatexStringsEnum} from "./latexStrings";
 
 class TextButtonGroup extends Component {
 
@@ -12,55 +11,29 @@ class TextButtonGroup extends Component {
             title: props.title,
             items: props.items,
             handler: props.handler, // only for the sub buttons of this group
-
-            isOpen: false
+            openHandler: props.openHandler,
         };
     }
 
     handleClick(e) {
         e.preventDefault();
-        console.log('click');
-        this.setState({isOpen: !this.state.isOpen});
-        // const returnVal = '`' + this.state.latex + '`';
-        // this.state.handler(returnVal);
-    }
-
-    renderCharacter() {
-        if (this.state.isOpen) {
-            return (<span aria-hidden>&or;</span>);
-        } else {
-            return (<span aria-hidden>&gt;</span>);
-        }
-    }
-
-    renderEachButton() {
-        return Object.keys(this.state.items).map((key, i) => {
-            return <TextButton handler={ (val) => this.state.handler(val) }
-                               latex={ this.state.items[key] }
-                               key={ i }
-            />
-        })
-    }
-
-    renderButtons() {
-        if (this.state.isOpen) {
-            return (
-                <div className="sub-buttons">
-                    { this.renderEachButton() }
-                </div>
-            );
-        }
+        this.state.openHandler(this.state.title);
     }
 
     render() {
-        return (
-            <div className="buttongroup-wrapper">
-                <Button onClick={ (e) => this.handleClick(e) } aria-label="Cancel">
-                    { this.state.title } { this.renderCharacter() }
+        if (this.props.isOpen) {
+            return (
+                <Button className="title-button" onClick={ (e) => this.handleClick(e) } aria-label="Cancel">
+                    { this.state.title } <span aria-hidden>&or;</span>
                 </Button>
-                { this.renderButtons() }
-            </div>
-        );
+            );
+        } else {
+            return (
+                <Button className="title-button no-hover" onClick={ (e) => this.handleClick(e) } aria-label="Cancel" outline>
+                    { this.state.title } <span aria-hidden>&gt;</span>
+                </Button>
+            );
+        }
     }
 
 }
