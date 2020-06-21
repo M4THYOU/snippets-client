@@ -1,6 +1,8 @@
 export const CanvasModesEnum = Object.freeze({
     'DRAW': 'draw',
     'ERASE': 'erase',
+    'BEGIN': 'begin',
+    'END': 'end',
 });
 
 export const PenStatesEnum = Object.freeze({

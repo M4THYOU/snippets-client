@@ -18,9 +18,10 @@ class CanvasView extends Component {
             .then(data => {
                 const isAuthorized = data.authorized;
                 if (!isAuthorized) {
-                    // this.props.history.push('/');
+                    this.props.history.push('/');
+                } else {
+                    this.setState({isLoaded: true});
                 }
-                this.setState({isLoaded: true});
             });
     }
 
