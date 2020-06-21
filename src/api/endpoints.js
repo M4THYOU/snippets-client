@@ -3,6 +3,7 @@ export const EndpointsEnum = Object.freeze({
     'TYPES': '/types/',
     'SNIPPETS': '/snippets/',
     'NOTES': '/notes/',
+    'LESSONS': '/lessons/',
     'AUTHENTICATE': '/authenticate/',
     'USERS': '/users/',
     'SEARCH': '/search/'

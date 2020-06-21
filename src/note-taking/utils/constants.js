@@ -12,7 +12,7 @@ export const CANVAS_WIDTH = 2000;
 export const CANVAS_DEFAULTS = {
     mode: CanvasModesEnum.DRAW,
     pen: PenStatesEnum.UP,
-    lineWidth: 4,
+    lineWidth: 3,
     penColour : PenColoursEnum.BLACK,
     penCoords: [0, 0],
 

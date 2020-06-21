@@ -19,6 +19,8 @@ import {
     faPlus, faRedo,
     faSave, faTrashAlt, faUndo,
 } from "@fortawesome/free-solid-svg-icons";
+import {apiPost} from "../../api/functions";
+import {EndpointsEnum} from "../../api/endpoints";
 
 class NoteCanvas extends Component {
 
@@ -54,7 +56,6 @@ class NoteCanvas extends Component {
         for (let i = 0; i < points.length; i++) {
             const pt = points[i];
 
-            console.log(pt.size);
             this.ctx.lineWidth = pt.s;
             this.ctx.strokeStyle = pt.c;
 
@@ -62,7 +63,6 @@ class NoteCanvas extends Component {
                 this.ctx.strokeStyle = '#ffffff';
             } else if (pt.m === CanvasModesEnum.BEGIN) {
                 this.ctx.beginPath();
-                // this.ctx.moveTo(pt.x, pt.y);
             }
 
             this.ctx.lineTo(pt.x,pt.y);
@@ -74,8 +74,6 @@ class NoteCanvas extends Component {
     newHistoryPoints(e, mode) {
         const points = this.state.points.slice();
         const point = {
-            px: this.state.penCoords[0],
-            py: this.state.penCoords[0],
             x: e.nativeEvent.offsetX,
             y: e.nativeEvent.offsetY,
             s: this.state.lineWidth, // size
@@ -191,7 +189,24 @@ class NoteCanvas extends Component {
     }
 
     save() {
-        console.log(JSON.stringify(this.state.points));
+        const rawJson = {
+            raw_canvas: this.state.points
+        };
+        const data = {
+            title: 'placeholder',
+            course: 'Math 136',
+            canvas: JSON.stringify(rawJson)
+        };
+        apiPost(EndpointsEnum.LESSONS, data)
+            .then(res => res.json())
+            .then(result => {
+                if (result) {
+                    console.log(result);
+                }
+            })
+            .catch(e => {
+                console.error(e);
+            });
     }
 
     canvasHeight() {
