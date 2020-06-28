@@ -15,7 +15,7 @@ canvas {
 .tools {
     padding: 10px 4px 10px 4px;
     text-align: center;
-    background-color: darkslategray;
+    background-color: #1976d2;
     width: 15%;
     height: 100%;
 }
@@ -53,5 +53,31 @@ canvas {
 }
 #colorPicker {
     margin: 1px;
+}
+
+.bottom-div {
+    width: 60%;
+    height: 80px;
+
+    background-color: #1976d2;
+    border-radius: 20px 20px 0 0;
+
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    padding: 10px 5px 10px 5px;
+
+    vertical-align: center;
+}
+
+.bottom-div .button {
+    border: 0;
+    margin: 1px;
+    height: 100%;
+    width: 80px;
+    border-radius: 5px;
+    background-color: lightgray;
 }
 

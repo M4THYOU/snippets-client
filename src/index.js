@@ -11,7 +11,7 @@ import CanvasView from "./note-taking/views/canvasView";
 ReactDOM.render(
     <BrowserRouter>
         <Switch>
-            <Route exact path="/canvas" component={ CanvasView } />
+            <Route exact path="/canvas/new" component={ CanvasView } />
             <App />
         </Switch>
     </BrowserRouter>,

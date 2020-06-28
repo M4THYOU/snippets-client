@@ -240,14 +240,11 @@ class NoteCanvas extends Component {
                         <button onClick={ (e) => this.erase(e) } className="button"><FontAwesomeIcon icon={ faEraser } /></button>
                     </div>
                     <div>
-                        <button onClick={ () => this.penSizeDown() } className="button"><FontAwesomeIcon icon={ faMinus } /></button>
-                        <button onClick={ () => this.penSizeUp() } className="button"><FontAwesomeIcon icon={ faPlus } /></button>
-                    </div>
-                    <div>
                         <button onClick={ () => this.undo() } className="button"><FontAwesomeIcon icon={ faUndo } /></button>
                         <button onClick={ () => this.redo() } className="button"><FontAwesomeIcon icon={ faRedo } /></button>
                     </div>
                     <div>
+                        <button onClick={ () => this.save() } className="button"><FontAwesomeIcon icon={ faSave } /></button>
                         <button onClick={ () => this.reset() } className="button"><FontAwesomeIcon icon={ faTrashAlt } /></button>
                     </div>
                 </div>
@@ -261,11 +258,17 @@ class NoteCanvas extends Component {
                     </canvas>
                 </div>
 
-                <div className="helpers">
-                    <button onClick={ () => this.save() } className="button"><FontAwesomeIcon icon={ faSave } /></button>
+                <div className="bottom-div">
+
                 </div>
             </div>
         );
+        /*
+        * <div>
+              <button onClick={ () => this.penSizeDown() } className="button"><FontAwesomeIcon icon={ faMinus } /></button>
+              <button onClick={ () => this.penSizeUp() } className="button"><FontAwesomeIcon icon={ faPlus } /></button>
+          </div>
+        * */
     }
 
 }

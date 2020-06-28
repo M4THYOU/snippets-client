@@ -46,7 +46,7 @@ class NavigationBar extends Component {
         if (this.state.name) {
             return (
                 <NavItem>
-                    <NavLink href="/" >{ this.state.name }</NavLink>
+                    <NavLink href="/my-profile" >{ this.state.name }</NavLink>
                 </NavItem>
             );
         }

@@ -10,6 +10,7 @@ import ViewSnippet from "./views/view-snippet";
 import EditSnippet from "./views/edit-snippet";
 import Login from "./views/login";
 import Register from "./views/register";
+import Profile from "./views/profile";
 
 // Components
 import NavigationBar from "./components/utils/navigationBar";
@@ -23,6 +24,7 @@ function App() {
 
             <Route exact path="/login" component={ Login } />
             <Route exact path="/register" component={ Register } />
+            <Route exact path="/my-profile" component={ Profile } />
 
             <Route exact path="/new" component={ NewSnippet } />
             <Route exact path="/snippet/:id" component={ ViewSnippet } />
