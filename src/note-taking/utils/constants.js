@@ -16,6 +16,9 @@ export const CANVAS_DEFAULTS = {
     penColour : PenColoursEnum.BLACK,
     penCoords: [0, 0],
 
+    pages: [],
+    selectedPageIndex: 0,
+
     points: [], // the saved state
     redoStack: [] // stack for the redo
 };

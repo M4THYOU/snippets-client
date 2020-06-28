@@ -55,6 +55,10 @@ class LessonPreview extends Component {
 
     }
 
+    canvasLink() {
+        return '/canvas/' + this.state.lesson.group_id;
+    }
+
     render() {
         if (this.state.isPlaceholder) {
             return (
@@ -70,8 +74,10 @@ class LessonPreview extends Component {
         }
         return (
             <div className="lesson-preview-container">
-                <canvas className="lesson-preview" ref={ this.ref } width={ this.CANVAS_WIDTH } height={ this.CANVAS_HEIGHT }>
-                </canvas>
+                <Link to={ this.canvasLink() }>
+                    <canvas className="lesson-preview" ref={ this.ref } width={ this.CANVAS_WIDTH } height={ this.CANVAS_HEIGHT }>
+                    </canvas>
+                </Link>
                 <strong>{ this.state.title }</strong>
             </div>
         );

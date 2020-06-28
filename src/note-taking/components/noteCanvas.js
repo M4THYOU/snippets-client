@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {CanvasModesEnum, PenStatesEnum} from "../utils/enums";
 import {
-    CANVAS_DEFAULTS,
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
     MAX_PEN_WIDTH,
@@ -21,17 +20,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {apiPost} from "../../api/functions";
 import {EndpointsEnum} from "../../api/endpoints";
+import {getBlankPage, getCanvasDefaults} from "../utils/functions";
+import PagePreview from "./pagePreview";
 
 class NoteCanvas extends Component {
 
     constructor(props) {
         super(props);
         this.ref = React.createRef();
-        this.state = CANVAS_DEFAULTS
+        this.state = getCanvasDefaults(this.props.lessons);
     }
 
     componentDidMount() {
-        this.reset();
+        this.reload();
     }
 
     draw(e) {
@@ -178,8 +179,25 @@ class NoteCanvas extends Component {
         this.drawFromPoints(points);
     }
 
+    reload() {
+        this.reset();
+        if (this.state.pages.length > 0) {
+            const i = this.state.selectedPageIndex;
+            this.drawPageAtIndex(i);
+        }
+
+    }
+
+    drawPageAtIndex(i) {
+        const page = this.state.pages[i];
+        const points = JSON.parse(page.canvas).raw_canvas;
+        const redoStack = [];
+        this.setState({ points, redoStack });
+        this.drawFromPoints(points);
+    }
+
     reset() {
-        this.setState(CANVAS_DEFAULTS);
+        this.setState(getCanvasDefaults(this.props.lessons));
 
         this.ctx = this.ref.current.getContext('2d');
 
@@ -220,6 +238,37 @@ class NoteCanvas extends Component {
         // return totalW * 0.85;
     }
 
+    existingPageClick(e, selectedOrder) {
+        e.preventDefault();
+        const currentSelectedIndex = this.state.selectedPageIndex;
+        const selectedPageIndex = selectedOrder - 1;
+        if (+selectedPageIndex === +currentSelectedIndex) {
+            return;
+        }
+        this.setState({selectedPageIndex});
+        this.drawPageAtIndex(selectedPageIndex);
+    }
+    newPageClick(e) {
+        e.preventDefault();
+        console.log('new');
+        const pages = this.state.pages.slice();
+        const page = getBlankPage(this.state.pages.length, +this.props.groupId);
+        pages.push(page);
+        console.log(page);
+        console.log(pages);
+        this.setState({pages});
+    }
+
+    renderPages() {
+        return this.state.pages.map((lesson) => {
+            if (+this.state.selectedPageIndex === +lesson.group_order - 1) {
+                return <PagePreview key={ lesson.id } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } selected />
+            } else {
+                return <PagePreview key={ lesson.id } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } />
+            }
+        });
+    }
+
     render() {
         const h = this.canvasHeight();
         const w = this.canvasWidth();
@@ -238,6 +287,10 @@ class NoteCanvas extends Component {
                     <div>
                         <button onClick={ (e) => this.draw(e) } className="button"><FontAwesomeIcon icon={ faPen } /></button>
                         <button onClick={ (e) => this.erase(e) } className="button"><FontAwesomeIcon icon={ faEraser } /></button>
+                    </div>
+                    <div>
+                        <button onClick={ () => this.penSizeDown() } className="button"><FontAwesomeIcon icon={ faMinus } /></button>
+                        <button onClick={ () => this.penSizeUp() } className="button"><FontAwesomeIcon icon={ faPlus } /></button>
                     </div>
                     <div>
                         <button onClick={ () => this.undo() } className="button"><FontAwesomeIcon icon={ faUndo } /></button>
@@ -259,16 +312,11 @@ class NoteCanvas extends Component {
                 </div>
 
                 <div className="bottom-div">
-
+                    { this.renderPages() }
+                    <PagePreview key={0} title="New Lesson" handler={ (e) => this.newPageClick(e) } placeholder/>
                 </div>
             </div>
         );
-        /*
-        * <div>
-              <button onClick={ () => this.penSizeDown() } className="button"><FontAwesomeIcon icon={ faMinus } /></button>
-              <button onClick={ () => this.penSizeUp() } className="button"><FontAwesomeIcon icon={ faPlus } /></button>
-          </div>
-        * */
     }
 
 }

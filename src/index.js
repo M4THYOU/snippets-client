@@ -12,6 +12,7 @@ ReactDOM.render(
     <BrowserRouter>
         <Switch>
             <Route exact path="/canvas/new" component={ CanvasView } />
+            <Route exact path="/canvas/:id" component={ CanvasView } />
             <App />
         </Switch>
     </BrowserRouter>,
