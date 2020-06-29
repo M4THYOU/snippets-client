@@ -18,6 +18,13 @@ canvas {
     background-color: #1976d2;
     width: 15%;
     height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.to-bottom {
+    margin-top: auto;
 }
 
 .canvas-div {
@@ -39,6 +46,9 @@ canvas {
     width: 48%;
     border-radius: 5px;
     background-color: lightgray;
+}
+.full-width {
+    width: 96% !important;
 }
 .helpers .button {
     border: 0;

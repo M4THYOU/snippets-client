@@ -52,7 +52,7 @@ class CanvasView extends Component {
     render() {
         if (this.state.isLoaded) {
             return (
-                <NoteCanvas groupId={ this.state.groupId } lessons={ this.state.lessons } />
+                <NoteCanvas groupId={ this.state.groupId } lessons={ this.state.lessons } history={ this.props.history } />
             );
         } else {
             return (

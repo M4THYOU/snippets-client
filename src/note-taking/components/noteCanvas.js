@@ -7,7 +7,7 @@ import {
     MIN_PEN_WIDTH,
     PEN_SIZE_CHANGE_RATE, UNDO_REDO_COUNT
 } from "../utils/constants";
-import { Input } from 'reactstrap';
+import {Input, Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, FormGroup} from 'reactstrap';
 
 import '../styles/noteCanvas.css';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -18,7 +18,7 @@ import {
     faPlus, faRedo,
     faSave, faTrashAlt, faUndo,
 } from "@fortawesome/free-solid-svg-icons";
-import {apiPost} from "../../api/functions";
+import {apiGet, apiPatch, apiPost} from "../../api/functions";
 import {EndpointsEnum} from "../../api/endpoints";
 import {getBlankPage, getCanvasDefaults} from "../utils/functions";
 import PagePreview from "./pagePreview";
@@ -29,6 +29,7 @@ class NoteCanvas extends Component {
         super(props);
         this.ref = React.createRef();
         this.state = getCanvasDefaults(this.props.lessons);
+        this.getCourses();
     }
 
     componentDidMount() {
@@ -126,9 +127,14 @@ class NoteCanvas extends Component {
 
     penUp(e) {
         const points = this.newHistoryPoints(e, CanvasModesEnum.END);
+        // update the page with current points.
+        const pages = this.state.pages.slice();
+        const page = pages[this.state.selectedPageIndex];
+        page.canvas = this.canvasFromPoints(points);
         this.setState({
             pen: PenStatesEnum.UP,
-            points
+            points,
+            pages
         });
     }
 
@@ -158,19 +164,16 @@ class NoteCanvas extends Component {
     undo() {
         const points = this.state.points.slice();
         const redoStack = this.state.redoStack.slice();
-
         for (let i = 0; (i < UNDO_REDO_COUNT) && (points.length > 0); i++) {
             const lastPoint = points.pop();
             redoStack.push(lastPoint);
         }
         this.setState({ points, redoStack });
-
         this.drawFromPoints(points);
     }
     redo() {
         const points = this.state.points.slice();
         const redoStack = this.state.redoStack.slice();
-
         for (let i = 0; (i < UNDO_REDO_COUNT) && (redoStack.length > 0); i++) {
             const undonePoint = redoStack.pop();
             points.push(undonePoint);
@@ -184,6 +187,9 @@ class NoteCanvas extends Component {
         if (this.state.pages.length > 0) {
             const i = this.state.selectedPageIndex;
             this.drawPageAtIndex(i);
+        } else {
+            const pages = [getBlankPage(0, null)];
+            this.setState({pages});
         }
 
     }
@@ -207,24 +213,77 @@ class NoteCanvas extends Component {
     }
 
     save() {
-        const rawJson = {
-            raw_canvas: this.state.points
-        };
+        if (this.props.groupId) {
+            console.log('update', this.props.groupId);
+            this.updateLesson();
+        } else {
+            this.toggleModal();
+        }
+    }
+
+    saveLesson() {
+        const title = this.state.title;
+        const course = this.state.course;
+        if (!title) {
+            alert('Please enter a title.');
+            return;
+        }
+        if (!course) {
+            alert('Please select a course.');
+            return;
+        }
+
+        const pages = this.state.pages.slice();
         const data = {
-            title: 'placeholder',
-            course: 'Math 136',
-            canvas: JSON.stringify(rawJson)
+            title,
+            course,
+            pages
         };
         apiPost(EndpointsEnum.LESSONS, data)
             .then(res => res.json())
             .then(result => {
+                console.log(result);
                 if (result) {
-                    console.log(result);
+                    window.location.href = '/canvas/' + result.data.group_id;
                 }
             })
             .catch(e => {
                 console.error(e);
             });
+    }
+
+    updateLesson() {
+        const pages = this.state.pages.slice();
+        const groupId = this.props.groupId;
+        const patchPages = pages.map(page => {
+            return {
+                canvas: page.canvas,
+                group_order: page.group,
+            }
+        });
+        console.log(pages);
+        console.log(patchPages);
+        // apiPatch()
+    }
+
+    getCourses() {
+        apiGet(EndpointsEnum.COURSES)
+            .then(res => res.json())
+            .then(result => {
+                let course = this.state.course;
+                if (result.data[0] && !course) {
+                    course = result.data[0].code;
+                }
+                this.setState({courses: result.data, course});
+            })
+            .catch(e => {
+                console.error(e);
+            })
+    }
+
+    canvasFromPoints(points) {
+        const obj = { raw_canvas: points };
+        return JSON.stringify(obj);
     }
 
     canvasHeight() {
@@ -250,23 +309,31 @@ class NoteCanvas extends Component {
     }
     newPageClick(e) {
         e.preventDefault();
-        console.log('new');
         const pages = this.state.pages.slice();
         const page = getBlankPage(this.state.pages.length, +this.props.groupId);
         pages.push(page);
-        console.log(page);
-        console.log(pages);
         this.setState({pages});
+    }
+
+    toggleModal() {
+        this.setState({isModalOpen: !this.state.isModalOpen});
+    }
+
+    inputChange(e, field) {
+        this.setState({[field]: e.target.value});
     }
 
     renderPages() {
         return this.state.pages.map((lesson) => {
             if (+this.state.selectedPageIndex === +lesson.group_order - 1) {
-                return <PagePreview key={ lesson.id } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } selected />
+                return <PagePreview key={ lesson.group_order } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } selected />
             } else {
-                return <PagePreview key={ lesson.id } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } />
+                return <PagePreview key={ lesson.group_order } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } />
             }
         });
+    }
+    renderCourseOptions() {
+        return this.state.courses.map((course) => <option key={course.id}>{course.code}</option>);
     }
 
     render() {
@@ -297,8 +364,10 @@ class NoteCanvas extends Component {
                         <button onClick={ () => this.redo() } className="button"><FontAwesomeIcon icon={ faRedo } /></button>
                     </div>
                     <div>
-                        <button onClick={ () => this.save() } className="button"><FontAwesomeIcon icon={ faSave } /></button>
-                        <button onClick={ () => this.reset() } className="button"><FontAwesomeIcon icon={ faTrashAlt } /></button>
+                        <button onClick={ () => this.save() } className="button full-width"><FontAwesomeIcon icon={ faSave } /></button>
+                    </div>
+                    <div className="to-bottom">
+                        <button onClick={ () => this.reset() } className="button full-width"><FontAwesomeIcon icon={ faTrashAlt } /></button>
                     </div>
                 </div>
 
@@ -315,6 +384,29 @@ class NoteCanvas extends Component {
                     { this.renderPages() }
                     <PagePreview key={0} title="New Lesson" handler={ (e) => this.newPageClick(e) } placeholder/>
                 </div>
+
+                <Modal isOpen={ this.state.isModalOpen } toggle={ () => this.toggleModal() } backdrop={ 'static' } fade={ false } >
+                    <ModalHeader toggle={ () => this.toggleModal() }>Save New Lesson</ModalHeader>
+                    <ModalBody>
+                        <FormGroup>
+                            <Label for="title">Title</Label>
+                            <Input type="text" name="title" id="title"
+                                   value={this.state.title}
+                                   onChange={(e) => this.inputChange(e, 'title')}
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="course">Course</Label>
+                            <Input type="select" value={this.state.course} onChange={ (e) => this.inputChange(e, 'course')} name="course" id="course">
+                                { this.renderCourseOptions() }
+                            </Input>
+                        </FormGroup>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={ () => this.saveLesson() }>Save</Button>{' '}
+                        <Button color="secondary" onClick={ () => this.toggleModal() }>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         );
     }

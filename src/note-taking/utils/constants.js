@@ -20,5 +20,11 @@ export const CANVAS_DEFAULTS = {
     selectedPageIndex: 0,
 
     points: [], // the saved state
-    redoStack: [] // stack for the redo
+    redoStack: [], // stack for the redo
+
+    isModalOpen: false,
+
+    courses: [],
+    course: '',
+    title: '',
 };
