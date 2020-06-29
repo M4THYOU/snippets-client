@@ -264,6 +264,7 @@ class NoteCanvas extends Component {
         console.log(pages);
         console.log(patchPages);
         // apiPatch()
+        // todo
     }
 
     getCourses() {
