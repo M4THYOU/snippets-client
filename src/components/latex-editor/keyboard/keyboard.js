@@ -45,6 +45,7 @@ class Keyboard extends Component {
     }
 
     renderButtonGroupButtons() {
+        // eslint-disable-next-line array-callback-return
         return Object.keys(LatexButtonLayout).map((key, i) => {
             if (this.state.buttonGroupsOpen[key]) {
                 return this.renderObjButtons(LatexButtonLayout[key]);

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {CanvasModesEnum} from "../../note-taking/utils/enums";
-import {Button, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
+import {Button} from "reactstrap";
 import {Link} from "react-router-dom";
 
 class LessonPreview extends Component {

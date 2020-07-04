@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {CanvasModesEnum} from "../utils/enums";
-import {Link} from "react-router-dom";
 
 class PagePreview extends Component {
     CANVAS_WIDTH = 100;

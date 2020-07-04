@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Button, Container, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
+import {Button, Container, Modal, ModalBody, ModalFooter} from "reactstrap";
 
 // Components
 import LessonPreview from "../components/lessons/lessonPreview";

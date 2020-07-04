@@ -4,7 +4,6 @@ import React, { Component } from "react";
 import {apiGet, isAuthenticated} from "../../api/functions";
 import NoteCanvas from "../components/noteCanvas";
 import {EndpointsEnum} from "../../api/endpoints";
-import {rawToRawString} from "../../components/latex-editor/utils/utils";
 
 class CanvasView extends Component {
 
