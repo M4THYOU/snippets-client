@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {CanvasModesEnum} from "../../note-taking/utils/enums";
+import {Button, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 import {Link} from "react-router-dom";
 
 class LessonPreview extends Component {
@@ -15,7 +16,8 @@ class LessonPreview extends Component {
         this.state = {
             isPlaceholder: props.placeholder,
             title: props.title,
-            lesson: props.lesson
+            lesson: props.lesson,
+            selectHandler: props.selectHandler
         };
 
     }
@@ -59,6 +61,11 @@ class LessonPreview extends Component {
         return '/canvas/' + this.state.lesson.group_id;
     }
 
+    selectLesson(e) {
+        e.preventDefault();
+        this.state.selectHandler(this.state.lesson.group_id);
+    }
+
     render() {
         if (this.state.isPlaceholder) {
             return (
@@ -78,7 +85,9 @@ class LessonPreview extends Component {
                     <canvas className="lesson-preview" ref={ this.ref } width={ this.CANVAS_WIDTH } height={ this.CANVAS_HEIGHT }>
                     </canvas>
                 </Link>
-                <strong>{ this.state.title }</strong>
+                <span>
+                    <strong>{ this.state.title }</strong> <Button color="danger" size="sm" outline onClick={ (e) => this.selectLesson(e) } ><FontAwesomeIcon icon={ faTrash } /></Button>
+                </span>
             </div>
         );
     }

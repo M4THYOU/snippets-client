@@ -16,7 +16,7 @@ import {
     faMinus,
     faPen,
     faPlus, faRedo,
-    faSave, faTrashAlt, faUndo,
+    faSave, faTrashAlt, faUndo, faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {apiGet, apiPatch, apiPost} from "../../api/functions";
 import {EndpointsEnum} from "../../api/endpoints";
@@ -214,11 +214,15 @@ class NoteCanvas extends Component {
 
     save() {
         if (this.props.groupId) {
-            console.log('update', this.props.groupId);
             this.updateLesson();
         } else {
             this.toggleModal();
         }
+    }
+
+    myProfile() {
+        this.save();
+        window.location.href = '/my-profile/'
     }
 
     saveLesson() {
@@ -239,15 +243,17 @@ class NoteCanvas extends Component {
             course,
             pages
         };
+
+        this.setState({isSaving: true});
         apiPost(EndpointsEnum.LESSONS, data)
             .then(res => res.json())
             .then(result => {
-                console.log(result);
                 if (result) {
                     window.location.href = '/canvas/' + result.data.group_id;
                 }
             })
             .catch(e => {
+                this.setState({isSaving: false});
                 console.error(e);
             });
     }
@@ -258,13 +264,35 @@ class NoteCanvas extends Component {
         const patchPages = pages.map(page => {
             return {
                 canvas: page.canvas,
-                group_order: page.group,
+                group_order: page.group_order,
+                group_id: groupId,
+                created_at: page.created_at
             }
         });
-        console.log(pages);
-        console.log(patchPages);
-        // apiPatch()
-        // todo
+
+        const title = this.state.title;
+        const course = this.state.course;
+        if (!title || !course) {
+            alert('Please try again.');
+            return;
+        }
+
+        const data = {
+            title,
+            course,
+            pages: patchPages
+        };
+
+        this.setState({isSaving: true});
+        apiPatch(EndpointsEnum.LESSONS, groupId, data)
+            .then(res => res.json())
+            .then(result => {
+                this.setState({isSaving: false});
+                console.log(result);
+            })
+            .catch(e => {
+                console.error(e);
+            })
     }
 
     getCourses() {
@@ -275,7 +303,9 @@ class NoteCanvas extends Component {
                 if (result.data[0] && !course) {
                     course = result.data[0].code;
                 }
-                this.setState({courses: result.data, course});
+                if (!this.state.course) {
+                    this.setState({courses: result.data, course});
+                }
             })
             .catch(e => {
                 console.error(e);
@@ -337,78 +367,92 @@ class NoteCanvas extends Component {
         return this.state.courses.map((course) => <option key={course.id}>{course.code}</option>);
     }
 
+    renderSpinner() {
+        if (this.state.isSaving) {
+            return (
+                <div className="spinner-overlay">
+                    <div className="spinner">
+                    </div>
+                </div>
+            );
+        }
+    }
+
     render() {
         const h = this.canvasHeight();
         const w = this.canvasWidth();
         return (
-            <div className="wrapper">
-                <div className="tools">
-                    <div>
-                        <Input
-                            type="color"
-                            name="color"
-                            id="colorPicker"
-                            placeholder="color placeholder"
-                            onInput={ (e) => this.setColour(e) }
-                        />
-                    </div>
-                    <div>
-                        <button onClick={ (e) => this.draw(e) } className="button"><FontAwesomeIcon icon={ faPen } /></button>
-                        <button onClick={ (e) => this.erase(e) } className="button"><FontAwesomeIcon icon={ faEraser } /></button>
-                    </div>
-                    <div>
-                        <button onClick={ () => this.penSizeDown() } className="button"><FontAwesomeIcon icon={ faMinus } /></button>
-                        <button onClick={ () => this.penSizeUp() } className="button"><FontAwesomeIcon icon={ faPlus } /></button>
-                    </div>
-                    <div>
-                        <button onClick={ () => this.undo() } className="button"><FontAwesomeIcon icon={ faUndo } /></button>
-                        <button onClick={ () => this.redo() } className="button"><FontAwesomeIcon icon={ faRedo } /></button>
-                    </div>
-                    <div>
-                        <button onClick={ () => this.save() } className="button full-width"><FontAwesomeIcon icon={ faSave } /></button>
-                    </div>
-                    <div className="to-bottom">
-                        <button onClick={ () => this.reset() } className="button full-width"><FontAwesomeIcon icon={ faTrashAlt } /></button>
-                    </div>
-                </div>
-
-                <div className="canvas-div">
-                    <canvas ref={ this.ref } width={ w } height={ h }
-                            onMouseMove={ (e) => this.drawing(e) }
-                            onMouseDown={ (e) => this.penDown(e) }
-                            onMouseUp={ (e) => this.penUp(e) }
-                    >
-                    </canvas>
-                </div>
-
-                <div className="bottom-div">
-                    { this.renderPages() }
-                    <PagePreview key={0} title="New Lesson" handler={ (e) => this.newPageClick(e) } placeholder/>
-                </div>
-
-                <Modal isOpen={ this.state.isModalOpen } toggle={ () => this.toggleModal() } backdrop={ 'static' } fade={ false } >
-                    <ModalHeader toggle={ () => this.toggleModal() }>Save New Lesson</ModalHeader>
-                    <ModalBody>
-                        <FormGroup>
-                            <Label for="title">Title</Label>
-                            <Input type="text" name="title" id="title"
-                                   value={this.state.title}
-                                   onChange={(e) => this.inputChange(e, 'title')}
+                <div className="wrapper">
+                    <div className="tools">
+                        <div>
+                            <Input
+                                type="color"
+                                name="color"
+                                id="colorPicker"
+                                placeholder="color placeholder"
+                                onInput={ (e) => this.setColour(e) }
                             />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="course">Course</Label>
-                            <Input type="select" value={this.state.course} onChange={ (e) => this.inputChange(e, 'course')} name="course" id="course">
-                                { this.renderCourseOptions() }
-                            </Input>
-                        </FormGroup>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={ () => this.saveLesson() }>Save</Button>{' '}
-                        <Button color="secondary" onClick={ () => this.toggleModal() }>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
-            </div>
+                        </div>
+                        <div>
+                            <button onClick={ (e) => this.draw(e) } className="button"><FontAwesomeIcon icon={ faPen } /></button>
+                            <button onClick={ (e) => this.erase(e) } className="button"><FontAwesomeIcon icon={ faEraser } /></button>
+                        </div>
+                        <div>
+                            <button onClick={ () => this.penSizeDown() } className="button"><FontAwesomeIcon icon={ faMinus } /></button>
+                            <button onClick={ () => this.penSizeUp() } className="button"><FontAwesomeIcon icon={ faPlus } /></button>
+                        </div>
+                        <div>
+                            <button onClick={ () => this.undo() } className="button"><FontAwesomeIcon icon={ faUndo } /></button>
+                            <button onClick={ () => this.redo() } className="button"><FontAwesomeIcon icon={ faRedo } /></button>
+                        </div>
+                        <div>
+                            <button onClick={ () => this.save() } className="button full-width"><FontAwesomeIcon icon={ faSave } /></button>
+                        </div>
+                        <div className="to-bottom">
+                            <button onClick={ () => this.myProfile() } className="button full-width"><FontAwesomeIcon icon={ faUserCircle } /></button>
+                            <button onClick={ () => this.reset() } className="button full-width"><FontAwesomeIcon icon={ faTrashAlt } /></button>
+                        </div>
+                    </div>
+
+                    <div className="canvas-div">
+                        <canvas ref={ this.ref } width={ w } height={ h }
+                                onMouseMove={ (e) => this.drawing(e) }
+                                onMouseDown={ (e) => this.penDown(e) }
+                                onMouseUp={ (e) => this.penUp(e) }
+                        >
+                        </canvas>
+                    </div>
+    
+                    <div className="bottom-div">
+                        { this.renderPages() }
+                        <PagePreview key={0} title="New Lesson" handler={ (e) => this.newPageClick(e) } placeholder/>
+                    </div>
+    
+                    <Modal isOpen={ this.state.isModalOpen } toggle={ () => this.toggleModal() } backdrop={ 'static' } fade={ false } >
+                        <ModalHeader toggle={ () => this.toggleModal() }>Save New Lesson</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <Label for="title">Title</Label>
+                                <Input type="text" name="title" id="title"
+                                       value={this.state.title}
+                                       onChange={(e) => this.inputChange(e, 'title')}
+                                />
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for="course">Course</Label>
+                                <Input type="select" value={this.state.course} onChange={ (e) => this.inputChange(e, 'course')} name="course" id="course">
+                                    { this.renderCourseOptions() }
+                                </Input>
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" onClick={ () => this.saveLesson() }>Save</Button>{' '}
+                            <Button color="secondary" onClick={ () => this.toggleModal() }>Cancel</Button>
+                        </ModalFooter>
+                    </Modal>
+
+                    { this.renderSpinner() }
+                </div>
         );
     }
 

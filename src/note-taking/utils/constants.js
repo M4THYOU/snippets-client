@@ -27,4 +27,6 @@ export const CANVAS_DEFAULTS = {
     courses: [],
     course: '',
     title: '',
+
+    isSaving: false,
 };
