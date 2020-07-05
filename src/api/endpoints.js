@@ -6,5 +6,6 @@ export const EndpointsEnum = Object.freeze({
     'LESSONS': '/lessons/',
     'AUTHENTICATE': '/authenticate/',
     'USERS': '/users/',
-    'SEARCH': '/search/'
+    'SEARCH': '/search/',
+    'INVITATIONS': '/invitations/',
 });

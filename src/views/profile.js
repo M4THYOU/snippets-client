@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import {Button, Container, Modal, ModalBody, ModalFooter} from "reactstrap";
+import {Button, Container, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 
 // Components
 import LessonPreview from "../components/lessons/lessonPreview";
 
 // Functions/Enums
-import {apiDelete, apiGet, isAuthenticated} from "../api/functions";
+import {apiDelete, apiGet, apiPost, isAuthenticated} from "../api/functions";
 import {EndpointsEnum} from "../api/endpoints";
+import {validateEmail} from "../utils/utils";
 
 class Profile extends Component {
 
@@ -17,6 +18,8 @@ class Profile extends Component {
             myLessons: [],
             sharedLessons: [],
             selectedLesson: null,
+            isShareModal: false,
+            email: ''
         };
     }
 
@@ -56,16 +59,32 @@ class Profile extends Component {
 
     deleteLesson() {
         if (!this.state.selectedLesson) { return; }
-
-        console.log('delete with group_id:', this.state.selectedLesson);
         apiDelete(EndpointsEnum.LESSONS, this.state.selectedLesson)
             .then(res => res.json())
             .then(_ => window.location.reload())
             .catch(e => console.error(e));
     }
 
-    selectLesson(groupId) {
-        this.setState({selectedLesson: groupId});
+    sendShare() {
+        const email = this.state.email;
+        if (!this.state.selectedLesson) { return; }
+        if (!validateEmail(email)) { return; }
+
+        const data = {
+            email,
+            group_id: this.state.selectedLesson
+        }
+
+        apiPost(EndpointsEnum.INVITATIONS, data)
+            .then(res => res.json())
+            .then(result => {
+                console.log(result);
+            })
+            .catch(e => console.error(e));
+    }
+
+    selectLesson(groupId, isShare= false) {
+        this.setState({selectedLesson: groupId, isShareModal: isShare});
     }
 
     closeModal() {
@@ -76,12 +95,16 @@ class Profile extends Component {
         return user.first_name + ' ' + user.last_name;
     }
 
+    inputChange(e, field) {
+        this.setState({[field]: e.target.value});
+    }
+
     renderMyLessons() {
         return this.state.myLessons.map((lesson) =>
                 <LessonPreview key={ lesson.id }
                                title={ lesson.title }
                                lesson={ lesson }
-                               selectHandler={ (groupId) => this.selectLesson(groupId) }
+                               selectHandler={ (groupId, isShare) => this.selectLesson(groupId, isShare) }
                 />);
     }
     renderSharedLessons() {
@@ -106,13 +129,30 @@ class Profile extends Component {
 
                     </div>
 
-                    <Modal isOpen={ !!this.state.selectedLesson } backdrop={ 'static' } fade={ false } >
+                    <Modal isOpen={ !!this.state.selectedLesson && !this.state.isShareModal } backdrop={ 'static' } fade={ false } >
                         <ModalBody>
                             <p>Are you sure you want to delete this lesson?</p>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="secondary" onClick={ () => this.closeModal() }>Cancel</Button>
                             <Button color="danger" onClick={ () => this.deleteLesson() }>Delete</Button>
+                        </ModalFooter>
+                    </Modal>
+
+                    <Modal isOpen={ !!this.state.selectedLesson && this.state.isShareModal } backdrop={ 'static' } fade={ false } >
+                        <ModalHeader toggle={ () => this.closeModal() }>Share Lesson</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <p>Enter an email address</p>
+                                <Input type="email" name="email" id="email"
+                                       value={this.state.title}
+                                       onChange={(e) => this.inputChange(e, 'email')}
+                                />
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="secondary" onClick={ () => this.closeModal() }>Cancel</Button>
+                            <Button color="primary" onClick={ () => this.sendShare() }>Share</Button>
                         </ModalFooter>
                     </Modal>
                 </Container>
