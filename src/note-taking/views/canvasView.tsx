@@ -5,6 +5,7 @@ import {apiGet, isAuthenticated} from "../../api/functions";
 import { NoteCanvas } from "../components/noteCanvas";
 import {Endpoint} from "../../api/endpoints";
 import {ILesson} from "../../interfaces/lessons";
+import {getBlankPage} from "../utils/functions";
 
 interface Props {
     history: any;
@@ -35,8 +36,9 @@ export class CanvasView extends Component<Props, State> {
                 } else {
                     if (this.state.groupId) {
                         this.getLesson();
-                    } else {
-                        this.setState({isLoaded: true});
+                    } else { // then it must be a new page!
+                        const lessons: ILesson[] = [getBlankPage(0)];
+                        this.setState({isLoaded: true, lessons});
                     }
                 }
             });
