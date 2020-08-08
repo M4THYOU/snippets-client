@@ -9,7 +9,7 @@ import {
 } from "../utils/constants";
 import {Input, Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, FormGroup} from 'reactstrap';
 
-import '../styles/noteCanvas.css';
+import '../styles/noteCanvas.scss';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faEraser,
@@ -46,20 +46,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         this.reload();
     }
 
-    draw(e) {
-        this.setState({
-            mode: CanvasMode.DRAW
-        });
-    }
-
-    erase(e) {
-        this.setState({
-            mode: CanvasMode.ERASE
-        });
-    }
-
-    // there needs to be a param for this!
-    // setting state immediately before calling this func doesn't work bc time delay I guess.
+// drawing helpers. //
     drawFromPoints(points) {
         if (!this.ctx) {
             console.error('Null Context');
@@ -71,7 +58,6 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
 
         for (let i = 0; i < points.length; i++) {
             const pt = points[i];
-
             this.ctx.lineWidth = pt.s;
             this.ctx.strokeStyle = pt.c;
 
@@ -80,18 +66,17 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
             } else if (pt.m === CanvasMode.BEGIN) {
                 this.ctx.beginPath();
             }
-
             this.ctx.lineTo(pt.x,pt.y);
             this.ctx.stroke();
         }
-
     }
 
-    newHistoryPoints(e, mode) {
+    // MOUSE
+    newHistoryPoints(x: number, y: number, mode: CanvasMode) {
         const points = this.state.points.slice();
         const point = {
-            x: e.nativeEvent.offsetX,
-            y: e.nativeEvent.offsetY,
+            x,
+            y,
             s: this.state.lineWidth, // size
             c: this.state.penColour, // colour
             m: mode
@@ -100,7 +85,28 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         return points;
     }
 
-    drawing(e) {
+// Mouse drawing //
+     private startDrawing(x: number, y: number) {
+        const points = this.newHistoryPoints(x, y, CanvasMode.BEGIN);
+        this.setState({
+            pen: PenState.DOWN,
+            penCoords: [x, y],
+            points,
+            redoStack: []
+        });
+    }
+    private endDrawing(x: number, y: number) {
+        const points = this.newHistoryPoints(x, y, CanvasMode.END);
+        const pages = this.state.pages.slice();
+        const page = pages[this.state.selectedPageIndex];
+        page.canvas = this.canvasFromPoints(points);
+        this.setState({
+            pen: PenState.UP,
+            points,
+            pages
+        });
+    }
+    private drawing(x: number, y: number) {
         if (!this.ctx) {
             console.error('Null Context');
             return;
@@ -117,14 +123,11 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
                 this.ctx.strokeStyle = '#ffffff';
             }
 
-            const x = e.nativeEvent.offsetX;
-            const y = e.nativeEvent.offsetY;
-
             this.ctx.moveTo(this.state.penCoords[0], this.state.penCoords[1]);
             this.ctx.lineTo(x, y);
             this.ctx.stroke();
 
-            const points = this.newHistoryPoints(e, this.state.mode);
+            const points = this.newHistoryPoints(x, y, this.state.mode);
 
             this.setState({
                 penCoords: [x, y],
@@ -134,25 +137,56 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     }
 
     penDown(e) {
-        const points = this.newHistoryPoints(e, CanvasMode.BEGIN);
+        const x = e.nativeEvent.offsetX;
+        const y = e.nativeEvent.offsetY;
+        this.startDrawing(x, y);
+    }
+    penUp(e) {
+        const x = e.nativeEvent.offsetX;
+        const y = e.nativeEvent.offsetY;
+        this.endDrawing(x, y);
+    }
+    penDrawing(e) {
+        const x = e.nativeEvent.offsetX;
+        const y = e.nativeEvent.offsetY;
+        this.drawing(x, y);
+    }
+
+// Touch drawing //
+    touchDown(e) {
+        const rect = e.target.getBoundingClientRect();
+        const x = e.targetTouches[0].clientX - rect.x;
+        const y = e.targetTouches[0].clientY - rect.y;
+        this.startDrawing(x, y);
+    }
+    touchUp(e) {
+        const rect = e.target.getBoundingClientRect();
+        // NOTE: need to use `changedTouches` here for some reason. `targetTouches` is empty array
+        const x = e.changedTouches[0].clientX - rect.x;
+        const y = e.changedTouches[0].clientY - rect.y;
+        this.endDrawing(x, y);
+    }
+    touchDrawing(e) {
+        if (e.targetTouches.length > 1) {
+            // then scroll!
+        } else {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.targetTouches[0].clientX - rect.x;
+            const y = e.targetTouches[0].clientY - rect.y;
+            this.drawing(x, y);
+        }
+    }
+
+// Utility bar stuff //
+    draw(e) {
         this.setState({
-            pen: PenState.DOWN,
-            penCoords: [e.nativeEvent.offsetX, e.nativeEvent.offsetY],
-            points,
-            redoStack: []
+            mode: CanvasMode.DRAW
         });
     }
 
-    penUp(e) {
-        const points = this.newHistoryPoints(e, CanvasMode.END);
-        // update the page with current points.
-        const pages = this.state.pages.slice();
-        const page = pages[this.state.selectedPageIndex];
-        page.canvas = this.canvasFromPoints(points);
+    erase(e) {
         this.setState({
-            pen: PenState.UP,
-            points,
-            pages
+            mode: CanvasMode.ERASE
         });
     }
 
@@ -251,6 +285,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         window.location.href = '/my-profile/'
     }
 
+// API calls //
     saveLesson() {
         const title = this.state.title;
         const course = this.state.course;
@@ -366,9 +401,12 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     }
     newPageClick(e) {
         e.preventDefault();
+        console.log('new');
         const pages = this.state.pages.slice();
         const page = getBlankPage(this.state.pages.length, +this.props.groupId);
+        console.log(page);
         pages.push(page);
+        console.log(pages);
         this.setState({pages});
     }
 
@@ -383,12 +421,10 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     renderPages() {
         // eslint-disable-next-line array-callback-return
         return this.state.pages.map((lesson) => {
-            if (!!lesson.title) {
-                if (+this.state.selectedPageIndex === +lesson.group_order - 1) {
-                    return <PagePreview key={ lesson.group_order } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } selected />
-                } else {
-                    return <PagePreview key={ lesson.group_order } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } />
-                }
+            if (+this.state.selectedPageIndex === +lesson.group_order - 1) {
+                return <PagePreview key={ lesson.group_order } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } selected />
+            } else {
+                return <PagePreview key={ lesson.group_order } title={ lesson.title } lesson={ lesson } handler={ (e, id) => this.existingPageClick(e, id) } />
             }
         });
     }
@@ -412,6 +448,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         const w = this.canvasWidth();
         return (
                 <div className="wrapper">
+
                     <div className="tools">
                         <div>
                             <Input
@@ -443,18 +480,24 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
                         </div>
                     </div>
 
-                    <div className="canvas-div">
-                        <canvas ref={ this.ref } width={ w } height={ h }
-                                onMouseMove={ (e) => this.drawing(e) }
-                                onMouseDown={ (e) => this.penDown(e) }
-                                onMouseUp={ (e) => this.penUp(e) }
-                        >
-                        </canvas>
-                    </div>
-    
-                    <div className="bottom-div">
-                        { this.renderPages() }
-                        <PagePreview key={0} title="New Lesson" handler={ (e) => this.newPageClick(e) } placeholder/>
+                    <div className="main-edit-area">
+                        <div className="top-div">
+                            { this.renderPages() }
+                            <PagePreview key={0} title="New Lesson" handler={ (e) => this.newPageClick(e) } placeholder/>
+                        </div>
+
+                        <div className="canvas-div">
+                            <canvas style={{touchAction: "none"}} ref={ this.ref } width={ w } height={ h }
+                                    onMouseMove={ (e) => this.penDrawing(e) }
+                                    onMouseDown={ (e) => this.penDown(e) }
+                                    onMouseUp={ (e) => this.penUp(e) }
+
+                                    onTouchMove={ (e) => this.touchDrawing(e) }
+                                    onTouchStart={ (e) => this.touchDown(e) }
+                                    onTouchEnd={ (e) => this.touchUp(e) }
+                            >
+                            </canvas>
+                        </div>
                     </div>
     
                     <Modal isOpen={ this.state.isModalOpen } toggle={ () => this.toggleModal() } backdrop={ 'static' } fade={ false } >

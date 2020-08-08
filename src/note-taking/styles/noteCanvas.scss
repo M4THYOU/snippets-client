@@ -7,30 +7,8 @@ canvas {
     background-color: white;
 }
 
-.wrapper {
-    display: flex;
-    height: 100%;
-}
-
-.tools {
-    padding: 10px 4px 10px 4px;
-    text-align: center;
-    background-color: #1976d2;
-    width: 15%;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-}
-
 .to-bottom {
     margin-top: auto;
-}
-
-.canvas-div {
-    width: 100%;
-    height: 100%;
-    overflow: scroll;
 }
 
 .helpers {
@@ -65,24 +43,7 @@ canvas {
     margin: 1px;
 }
 
-.bottom-div {
-    width: 60%;
-    height: 80px;
-
-    background-color: #1976d2;
-    border-radius: 0 0 20px 20px;
-
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    margin: auto;
-    padding: 10px 20px 5px 20px;
-
-    display: flex;
-}
-
-.bottom-div .button {
+.top-div .button {
     border: 0;
     margin: 1px;
     height: 100%;
@@ -119,5 +80,49 @@ canvas {
 .selected-preview {
     border: solid 1px red;
     box-shadow: 0 16px 32px 0 rgba(0,0,0,0.2);
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.tools {
+    padding: 10px 4px 10px 4px;
+    text-align: center;
+    background-color: #1976d2;
+    width: 10%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.main-edit-area {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+.top-div {
+    width: 100%;
+    height: 70px;
+
+    background-color: #1976d2;
+    margin: auto;
+    padding: 10px 20px 5px 20px;
+
+    display: flex;
+}
+
+.canvas-div {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+
+    canvas {
+        border: none;
+    }
 }
 

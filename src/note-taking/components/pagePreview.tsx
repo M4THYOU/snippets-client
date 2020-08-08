@@ -7,13 +7,13 @@ import {ILesson} from "../../interfaces/lessons";
 interface Props {
     selected?: boolean;
     placeholder?: boolean;
-    title: string;
+    title?: string;
     lesson?: ILesson;
     handler: any;
 }
 interface State {
     isPlaceholder: boolean;
-    title: string;
+    title?: string;
     lesson?: ILesson;
     clickHandler: any;
 }
