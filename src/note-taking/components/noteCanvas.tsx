@@ -169,8 +169,10 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     }
     touchDrawing(e) {
         if (e.targetTouches.length > 1) {
+            console.log('two finger!');
             this.touchAction = 'auto';
         } else {
+            this.touchAction = 'none';
             const rect = e.target.getBoundingClientRect();
             const x = e.targetTouches[0].clientX - rect.x;
             const y = e.targetTouches[0].clientY - rect.y;
