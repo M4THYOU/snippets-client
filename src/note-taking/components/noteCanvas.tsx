@@ -169,7 +169,6 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     }
     touchDrawing(e) {
         if (e.targetTouches.length > 1) {
-            console.log('two finger!');
             this.touchAction = 'pan-x pan-y';
         } else {
             this.touchAction = 'none';
@@ -352,7 +351,6 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
             .then(res => res.json())
             .then(result => {
                 this.setState({isSaving: false});
-                console.log(result);
             })
             .catch(e => {
                 console.error(e);
