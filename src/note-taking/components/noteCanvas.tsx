@@ -34,6 +34,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
 
     private readonly ref: React.RefObject<HTMLCanvasElement>;
     private ctx: CanvasRenderingContext2D | null;
+    private touchAction: string = 'none';
 
     constructor(props: Props) {
         super(props);
@@ -168,7 +169,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     }
     touchDrawing(e) {
         if (e.targetTouches.length > 1) {
-            // then scroll!
+            this.touchAction = 'auto';
         } else {
             const rect = e.target.getBoundingClientRect();
             const x = e.targetTouches[0].clientX - rect.x;
@@ -401,12 +402,9 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
     }
     newPageClick(e) {
         e.preventDefault();
-        console.log('new');
         const pages = this.state.pages.slice();
         const page = getBlankPage(this.state.pages.length, +this.props.groupId);
-        console.log(page);
         pages.push(page);
-        console.log(pages);
         this.setState({pages});
     }
 
@@ -487,7 +485,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
                         </div>
 
                         <div className="canvas-div">
-                            <canvas style={{touchAction: "none"}} ref={ this.ref } width={ w } height={ h }
+                            <canvas style={{touchAction: this.touchAction}} ref={ this.ref } width={ w } height={ h }
                                     onMouseMove={ (e) => this.penDrawing(e) }
                                     onMouseDown={ (e) => this.penDown(e) }
                                     onMouseUp={ (e) => this.penUp(e) }
