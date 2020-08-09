@@ -447,7 +447,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         const h = this.canvasHeight();
         const w = this.canvasWidth();
         return (
-                <div className="wrapper">
+                <div className="wrapper" style={{touchAction: 'none'}}>
 
                     <div className="tools">
                         <div>
