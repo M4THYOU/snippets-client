@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {Container, Form, FormGroup, Label, Input, Button, Alert} from "reactstrap";
 
 // Components
-import {apiLogin, isAuthenticated} from "../api/functions";
+import {apiLogin, isAuthenticated, sendConfirmEmail} from "../api/functions";
 
 // Functions/Enums
 
@@ -12,20 +12,24 @@ interface Props {
 
 interface State {
     isLoaded: boolean;
-    isError: boolean,
+    isSaving: boolean;
+    error: string,
+    errorShouldShowSendEmail: boolean,
     email: string,
     password: string
 }
 
 export class Login extends Component<Props, State> {
 
-    loginErrorMessage = 'Invalid login credentials';
+    DEFAULT_ERROR_MESSAGE = 'Invalid login credentials';
 
     constructor(props: Props) {
         super(props);
         this.state = {
             isLoaded: false,
-            isError: false,
+            isSaving: false,
+            error: '',
+            errorShouldShowSendEmail: false,
             email: '',
             password: '',
         };
@@ -43,24 +47,38 @@ export class Login extends Component<Props, State> {
             });
     }
 
-    loginError() {
-        const isError = true;
-        const email = '';
+    loginError(error: string, showResendEmail: boolean) {
+        const isSaving = false;
         const password = '';
-        this.setState({isError, email, password});
+        this.setState({isSaving, error, errorShouldShowSendEmail: showResendEmail, password});
     }
 
     // API
+    async resendEmail() {
+        this.setState({isSaving: true});
+        const { isSuccess, result } = await sendConfirmEmail(this.state.email);
+        if (!isSuccess) {
+            console.error(result);
+        }
+        this.setState({isSaving: false});
+    }
+
     async loginHandler(e) {
         e.preventDefault();
-
-        const isValidLogin = await apiLogin(this.state.email, this.state.password);
-        if (isValidLogin) {
+        this.setState({isSaving: true});
+        const { isSuccess, result } = await apiLogin(this.state.email, this.state.password);
+        if (isSuccess) {
             // because we need to force page refresh to update header values.
             window.location.href = '/';
-            // this.props.history.push('/');
         } else {
-            this.loginError();
+            const error = result.error;
+            console.log(error);
+
+            let message = this.DEFAULT_ERROR_MESSAGE;
+            if (!!error.user_authentication) {
+                message = error.user_authentication;
+            }
+            this.loginError(message, !!error.confirm_email);
         }
     }
 
@@ -76,12 +94,30 @@ export class Login extends Component<Props, State> {
     }
 
     // rendering
+    renderEmailSendButton() {
+        if (this.state.errorShouldShowSendEmail) {
+            return (
+                <span onClick={ () => this.resendEmail() } className="link-text">Resend Confirmation</span>
+            );
+        }
+    }
     renderLoginError() {
-        if (this.state.isError) {
+        if (!!this.state.error) {
             return (
                 <Alert color="danger">
-                    { this.loginErrorMessage }
+                    { this.state.error } { this.renderEmailSendButton() }
                 </Alert>
+            );
+        }
+    }
+
+    renderSpinner() {
+        if (this.state.isSaving) {
+            return (
+                <div className="spinner-overlay">
+                    <div className="spinner">
+                    </div>
+                </div>
             );
         }
     }
@@ -103,7 +139,7 @@ export class Login extends Component<Props, State> {
                         <br/>
                         <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
                             <Label for="password" className="mr-sm-2">Password</Label>
-                            <Input type="password" name="password" id="password"
+                            <Input type="password" name="password" id="password" value={ this.state.password }
                                    onChange={(e) => this.inputChange(e, 'password')}
                                    onKeyDown={ (e) => this.passwordKeyDown(e) }
                             />
@@ -111,6 +147,7 @@ export class Login extends Component<Props, State> {
                         <br/>
                         <Button color="primary" onClick={(e) => this.loginHandler(e)}>Login</Button>
                     </Form>
+                    { this.renderSpinner() }
                 </Container>
             );
         } else {

@@ -119,13 +119,13 @@ export function apiLogin(email, password) {
         .then(res => res.json())
         .then(result => {
             if (!!result.error) {
-                return false;
+                return {isSuccess: false, result};
             }
             localStorage.setItem(jwtStorageKey, result.auth_token);
-            return true;
+            return {isSuccess: true, result};
         })
         .catch(e => {
-            return false;
+            return {isSuccess: false, result: e};
         });
 }
 
@@ -142,5 +142,17 @@ export async function isAuthenticated() {
         .catch(e => {
             console.error(e);
             return false;
+        });
+}
+
+export function sendConfirmEmail(email: string) {
+    const data = { email };
+    return apiPost(Endpoint.SEND_CONFIRM_EMAIL, data)
+        .then(res => res.json())
+        .then(result => {
+            return {isSuccess: result.status !== 'ERROR', result};
+        })
+        .catch(e => {
+            return {isSuccess: false, result: e};
         });
 }

@@ -4,6 +4,7 @@ import {Container, Form, FormGroup, Label, Input, Button, Alert, Row, Col} from 
 // Components
 import {apiPost, isAuthenticated} from "../api/functions";
 import {Endpoint} from "../api/endpoints";
+import {PleaseConfirm} from "../components/utils/please-confirm";
 
 // Functions/Enums
 
@@ -13,7 +14,9 @@ interface Props {
 
 interface State {
     isLoaded: boolean;
+    isSaving: boolean;
     isError: boolean;
+    isRegisterDone: boolean;
     error: string;
     email: string;
     firstName: string;
@@ -29,8 +32,10 @@ export class Register extends Component<Props, State> {
         super(props);
         this.state = {
             isLoaded: false,
-            error: '',
+            isSaving: false,
             isError: false,
+            isRegisterDone: false,
+            error: '',
             email: '',
             firstName: '',
             lastName: '',
@@ -110,16 +115,26 @@ export class Register extends Component<Props, State> {
         if (!validForm) {
             return;
         }
-
+        this.setState({isSaving: true});
         const data = {email, first_name, last_name, password, password_confirmation, does_agree};
         apiPost(Endpoint.USERS, data)
             .then(res => res.json())
             .then(result => {
-                console.log('a');
-                if ((result.status === 'ERROR') || (Number.isInteger(result.status) && result.status >= 400)) {
-                    this.setState({error: result.message || result.error });
+                if (result.status === 'ERROR') {
+                    const data = result.data;
+                    let s = '';
+                    Object.keys(data).forEach((key, i: number) => {
+                        if (!!i) {
+                            s += ', ';
+                        }
+                        s += data[key].join(', ');
+                    });
+                    const error = s || 'Error Saving User';
+                    this.setState({error, isSaving: false});
+                } else if (Number.isInteger(result.status) && result.status >= 400) {
+                    this.setState({error: result.message || result.error, isSaving: false});
                 } else {
-                    this.props.history.push('/login');
+                    this.setState({isRegisterDone: true});
                 }
             })
             .catch(e => {
@@ -155,8 +170,19 @@ export class Register extends Component<Props, State> {
         }
     }
 
+    renderSpinner() {
+        if (this.state.isSaving) {
+            return (
+                <div className="spinner-overlay">
+                    <div className="spinner">
+                    </div>
+                </div>
+            );
+        }
+    }
+
     render() {
-        if (this.state.isLoaded) {
+        if (this.state.isLoaded && !this.state.isRegisterDone) {
             return (
                 <Container>
                     <h1>Register</h1>
@@ -220,8 +246,15 @@ export class Register extends Component<Props, State> {
                         <br />
                         <Button color="primary" onClick={ (e) => this.registerHandler(e) }>Register</Button>
                     </Form>
+                    { this.renderSpinner() }
                 </Container>
             );
+        } else if (this.state.isLoaded && this.state.isRegisterDone) {
+            return (
+                <Container>
+                    <PleaseConfirm email={ this.state.email } />
+                </Container>
+            )
         } else {
             return (
                 <p>Loading...</p>
