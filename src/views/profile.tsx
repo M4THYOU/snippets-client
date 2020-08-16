@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Button, Container, Modal, ModalBody, ModalFooter} from "reactstrap";
+import {Button, Container, Modal, ModalBody, ModalFooter, ModalHeader, FormGroup, Input} from "reactstrap";
 
 // Components
 import LessonPreview from "../components/lessons/lessonPreview";
@@ -22,6 +22,8 @@ interface State {
     selectedLesson?: ILesson;
     isShareModal: boolean;
     email?: string;
+
+    isSavingModal: boolean;
 }
 
 export class Profile extends Component<Props, State> {
@@ -32,6 +34,7 @@ export class Profile extends Component<Props, State> {
             myLessons: [],
             sharedLessons: [],
             isShareModal: false,
+            isSavingModal: false
         };
     }
 
@@ -59,7 +62,7 @@ export class Profile extends Component<Props, State> {
                     if (!!this.state.user && lesson.created_by_uid && +lesson.created_by_uid === +this.state.user.id) {
                         myLessons.push(lesson);
                     } else {
-                        sharedLessons.push(lesson)
+                        sharedLessons.push(lesson);
                     }
                 });
                 this.setState({myLessons, sharedLessons});
@@ -79,6 +82,7 @@ export class Profile extends Component<Props, State> {
 
     sendShare() {
         const email = this.state.email;
+
         if (!this.state.selectedLesson) { return; }
         if (!validateEmail(email)) { return; }
 
@@ -87,9 +91,11 @@ export class Profile extends Component<Props, State> {
             group_id: this.state.selectedLesson
         }
 
+        this.setState({isSavingModal: true});
         apiPost(Endpoint.INVITATIONS, data)
             .then(res => res.json())
             .then(result => {
+                this.setState({email: '', isShareModal: false, selectedLesson: undefined, isSavingModal: false});
                 console.log(result);
             })
             .catch(e => console.error(e));
@@ -100,7 +106,7 @@ export class Profile extends Component<Props, State> {
     }
 
     closeModal() {
-        this.setState({selectedLesson: undefined});
+        this.setState({selectedLesson: undefined, email: '', isSavingModal: false});
     }
 
     getName(user) {
@@ -111,6 +117,7 @@ export class Profile extends Component<Props, State> {
         this.setState({[field]: e.target.value} as Pick<State, keyof State>);
     }
 
+    // rendering
     renderMyLessons() {
         return this.state.myLessons.map((lesson) =>
                 <LessonPreview key={ lesson.id }
@@ -151,24 +158,22 @@ export class Profile extends Component<Props, State> {
                         </ModalFooter>
                     </Modal>
 
-                    {/*
                     <Modal isOpen={ !!this.state.selectedLesson && this.state.isShareModal } backdrop={ 'static' } fade={ false } >
                         <ModalHeader toggle={ () => this.closeModal() }>Share Lesson</ModalHeader>
                         <ModalBody>
                             <FormGroup>
-                                <p>Enter an email address</p>
-                                <Input type="email" name="email" id="email"
-                                       value={this.state.title}
-                                       onChange={(e) => this.inputChange(e, 'email')}
-                                />
-                            </FormGroup>
-                        </ModalBody>
+                                    <p>Enter an email address</p>
+                                    <Input type="email" name="email" id="email"
+                                           disabled={ this.state.isSavingModal }
+                                           onChange={(e) => this.inputChange(e, 'email')}
+                                    />
+                                </FormGroup>
+                            </ModalBody>
                         <ModalFooter>
                             <Button color="secondary" onClick={ () => this.closeModal() }>Cancel</Button>
-                            <Button color="primary" onClick={ () => this.sendShare() }>Share</Button>
+                            <Button color="primary" onClick={ () => this.sendShare() } disabled={ this.state.isSavingModal }>Share</Button>
                         </ModalFooter>
                     </Modal>
-                    */}
                 </Container>
             );
         } else {
