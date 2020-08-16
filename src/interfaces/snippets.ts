@@ -1,15 +1,6 @@
+import {CourseType, SnippetType} from "./db";
 
 export type DATETIME = string | Date;
-
-export enum CourseType {
-    MATH_136 = 'Math 136',
-    MATH_138 = 'Math 138',
-}
-
-export enum SnippetType {
-    THEOREM = 'Theorem',
-    DEFINITION = 'Definition',
-}
 
 export interface ISnippetType {
     id: number;

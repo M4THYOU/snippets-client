@@ -9,7 +9,8 @@ import { apiGet } from '../api/functions';
 import {Endpoint} from "../api/endpoints";
 import { TextTitle } from "./latex-editor/partials/textTitle";
 import {parseRawString} from "./latex-editor/utils/utils";
-import {CourseType, ICourseType, IRawPart, ISnippetType, SnippetType} from "../interfaces/snippets";
+import {ICourseType, IRawPart, ISnippetType} from "../interfaces/snippets";
+import {CourseType, SnippetType} from "../interfaces/db";
 
 interface Props {
     title?: string;

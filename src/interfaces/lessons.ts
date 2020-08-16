@@ -1,4 +1,5 @@
-import {CourseType, DATETIME} from "./snippets";
+import {DATETIME} from "./snippets";
+import {CourseType, URoleType} from "./db";
 
 export interface ILesson {
     id?: number;
@@ -10,6 +11,10 @@ export interface ILesson {
     updated_at?: DATETIME;
     group_id?: number;
     group_order: number;
+}
+
+export interface ILessonWithRole extends ILesson {
+    role_type: URoleType
 }
 
 export interface IRawCanvas {

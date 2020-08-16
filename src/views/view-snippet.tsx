@@ -10,8 +10,9 @@ import {Endpoint} from "../api/endpoints";
 import { NoteForm } from "../components/noteForm";
 import {isValidNoteForm, rawToTextDBField, renderNotes} from "../utils/notes";
 import {INote} from "../interfaces/notes";
-import {CourseType, DATETIME, IRawPart, SnippetType} from "../interfaces/snippets";
+import {DATETIME, IRawPart} from "../interfaces/snippets";
 import {IUser} from "../interfaces/users";
+import {CourseType, SnippetType} from "../interfaces/db";
 
 interface Props {
     history: any;

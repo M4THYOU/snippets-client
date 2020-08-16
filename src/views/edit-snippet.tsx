@@ -11,7 +11,8 @@ import {apiGet, apiPatch, isAuthenticated} from "../api/functions";
 import {rawToRawString} from "../components/latex-editor/utils/utils";
 import {INote} from "../interfaces/notes";
 import {IUser} from "../interfaces/users";
-import {CourseType, DATETIME, IRawPart, SnippetType} from "../interfaces/snippets";
+import {DATETIME, IRawPart} from "../interfaces/snippets";
+import {CourseType, SnippetType} from "../interfaces/db";
 
 interface Props {
     history: any;

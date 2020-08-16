@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import {Button, Container, Modal, ModalBody, ModalFooter, ModalHeader, FormGroup, Input} from "reactstrap";
+import React, {Component} from "react";
+import {Button, Container, FormGroup, Input, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 
 // Components
 import LessonPreview from "../components/lessons/lessonPreview";
@@ -9,7 +9,8 @@ import {apiDelete, apiGet, apiPost, isAuthenticated} from "../api/functions";
 import {Endpoint} from "../api/endpoints";
 import {validateEmail} from "../utils/utils";
 import {IUser} from "../interfaces/users";
-import {ILesson} from "../interfaces/lessons";
+import {ILessonWithRole} from "../interfaces/lessons";
+import {URoleType} from "../interfaces/db";
 
 interface Props {
     history: any;
@@ -17,9 +18,9 @@ interface Props {
 
 interface State {
     user?: IUser;
-    myLessons: ILesson[];
-    sharedLessons: ILesson[];
-    selectedLesson?: ILesson;
+    myLessons: ILessonWithRole[];
+    sharedLessons: ILessonWithRole[];
+    selectedLesson?: ILessonWithRole;
     isShareModal: boolean;
     email?: string;
 
@@ -56,10 +57,10 @@ export class Profile extends Component<Props, State> {
         apiGet(Endpoint.LESSONS)
             .then(res => res.json())
             .then(result => {
-                let myLessons: ILesson[] = [];
-                let sharedLessons: ILesson[] = [];
-                result.data.forEach((lesson: ILesson) => {
-                    if (!!this.state.user && lesson.created_by_uid && +lesson.created_by_uid === +this.state.user.id) {
+                let myLessons: ILessonWithRole[] = [];
+                let sharedLessons: ILessonWithRole[] = [];
+                result.data.forEach((lesson: ILessonWithRole) => {
+                    if (lesson.role_type === URoleType.LESSON_OWNER) {
                         myLessons.push(lesson);
                     } else {
                         sharedLessons.push(lesson);
@@ -127,7 +128,12 @@ export class Profile extends Component<Props, State> {
                 />);
     }
     renderSharedLessons() {
-        // this.state.sharedLessons
+        return this.state.sharedLessons.map((lesson) =>
+            <LessonPreview key={ lesson.id }
+                           title={ lesson.title || '' }
+                           lesson={ lesson }
+                           selectHandler={ (groupId, isShare) => this.selectLesson(groupId, isShare) }
+            />);
     }
 
     render() {
@@ -145,7 +151,7 @@ export class Profile extends Component<Props, State> {
                     <hr/>
                     <h4 className="left-align">Shared With Me</h4>
                     <div className="left-align">
-
+                        { this.renderSharedLessons() }
                     </div>
 
                     <Modal isOpen={ !!this.state.selectedLesson && !this.state.isShareModal } backdrop={ 'static' } fade={ false } >

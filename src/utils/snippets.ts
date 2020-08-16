@@ -3,7 +3,8 @@
  * @param snippet {Object[]} Where each object has the fields isMath{bool} and value{string}.
  * @return {String}
  */
-import {CourseType, IRawPart, SnippetType} from "../interfaces/snippets";
+import {IRawPart} from "../interfaces/snippets";
+import {CourseType, SnippetType} from "../interfaces/db";
 
 export function buildSnippet(snippet: IRawPart[]) {
     const rawJson = {

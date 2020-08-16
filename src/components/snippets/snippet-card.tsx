@@ -3,7 +3,8 @@ import { Card, Button, CardSubtitle, CardHeader, CardBody } from 'reactstrap';
 
 // Components
 import { RawSnippet } from "../latex-editor/partials/rawSnippet";
-import {CourseType, DATETIME, IRawSnippet, SnippetType} from "../../interfaces/snippets";
+import {DATETIME, IRawSnippet} from "../../interfaces/snippets";
+import {CourseType, SnippetType} from "../../interfaces/db";
 
 interface Props {
     history: any;

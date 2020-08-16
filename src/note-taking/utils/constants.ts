@@ -1,6 +1,7 @@
 import {CanvasMode, PenColour, PenState} from "./enums";
 import {ILesson} from "../../interfaces/lessons";
-import {CourseType, ICourseType} from "../../interfaces/snippets";
+import {ICourseType} from "../../interfaces/snippets";
+import {CourseType} from "../../interfaces/db";
 
 export const UNDO_REDO_COUNT = 10;
 
