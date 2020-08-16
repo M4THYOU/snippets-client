@@ -84,51 +84,39 @@ export class Main extends Component<Props, State> {
         const snippet_type = snippet.snippet_type;
         const title = snippet.title;
         const updated_at = snippet.updated_at;
+        // this div is used to get rid of the stretched height of each box in the flex row.
         return (
-            <SnippetCard key={id}
-                         course={course}
-                         created_at={created_at}
-                         id={id}
-                         raw={raw}
-                         snippet_type={snippet_type}
-                         title={title}
-                         updated_at={updated_at}
-                         history={this.props.history}
-            />
+            <div>
+                <SnippetCard key={id}
+                             course={course}
+                             created_at={created_at}
+                             id={id}
+                             raw={raw}
+                             snippet_type={snippet_type}
+                             title={title}
+                             updated_at={updated_at}
+                             history={this.props.history}
+                />
+            </div>
         );
     }
 
-    renderSnippetsRow(snippets) {
-        return snippets.map((snippet, i) => {
-            return (
-                <Col sm={ 12 / this.SNIPPETS_PER_ROW } key={ 'col_' + i }>
-                    { this.renderSingleSnippet(snippet) }
-                </Col>
-            );
-        });
-    }
-
-    renderSnippets() {
-        const snippets = this.state.snippets;
-
+    renderSnippets2() {
         if (!this.state.isSearchDone) {
             return (
                 <p>Loading...</p>
             );
         }
 
+        const snippets = this.state.snippets.slice();
         if (snippets.length === 0 && this.state.isSearchDone) {
             return (
                 <p>No snippets found.</p>
             );
         }
-        const snipRows = chunkArray(this.SNIPPETS_PER_ROW, snippets);
-        return snipRows.map((row, i) => {
-            return (
-                <Row className="margin-bottom" key={ 'row_' + i }>
-                    { this.renderSnippetsRow(row) }
-                </Row>
-            );
+
+        return snippets.map((snippet, i) => {
+            return this.renderSingleSnippet(snippet);
         });
     }
 
@@ -141,8 +129,8 @@ export class Main extends Component<Props, State> {
                     <hr/>
                     <SearchBar searchHandler={ (raw) => this.searchHandler(raw) } />
                     <hr/>
-                    <Container>
-                        { this.renderSnippets() }
+                    <Container className="snippets-container">
+                        { this.renderSnippets2() }
                     </Container>
                 </Container>
             );

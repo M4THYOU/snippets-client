@@ -53,7 +53,7 @@ export class SnippetCard extends Component<Props, State> {
 
     render() {
         return (
-            <Card>
+            <Card className="snippet">
                 <CardHeader>
                     { this.renderTitle() }
                     <hr />

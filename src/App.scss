@@ -202,3 +202,25 @@ a.box-close{
   text-decoration: underline;
   cursor: pointer;
 }
+
+.snippets-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.snippet {
+  max-width: 20rem;
+  margin-bottom: 1rem;
+}
+
+/* Masonry View TODO
+.snippets-container {
+  display: flex;
+  flex-flow: column wrap;
+  align-content: space-between;
+  // height: 60rem;
+}
+.snippet {
+  width: 24%;
+  margin-bottom: 1rem;
+}*/
