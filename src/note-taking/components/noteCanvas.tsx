@@ -238,6 +238,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
 
     reload() {
         this.reset();
+        this.setState(getCanvasDefaults(this.props.lessons));
         if (this.state.pages.length > 0) {
             const i = this.state.selectedPageIndex;
             this.drawPageAtIndex(i);
@@ -256,8 +257,8 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         this.drawFromPoints(points);
     }
 
+    // clears the current canvas. Not the state though.
     reset() {
-        this.setState(getCanvasDefaults(this.props.lessons));
         if (!this.ref.current) {
             console.error('Null Canvas');
             return;
@@ -272,6 +273,14 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
         this.ctx.fillStyle='white';
         this.ctx.clearRect(0,0, this.canvasWidth(), this.canvasHeight());
         this.ctx.fillRect(0,0, this.canvasWidth(), this.canvasHeight());
+    }
+
+    clearPage() {
+        this.reset();
+
+        const pages = this.state.pages.slice();
+        pages[this.state.selectedPageIndex].canvas = '{"raw_canvas": []}';
+        this.setState({pages});
     }
 
     save() {
@@ -474,7 +483,7 @@ export class NoteCanvas extends Component<Props, ICanvasDefault> {
                         </div>
                         <div className="to-bottom">
                             <button onClick={ () => this.myProfile() } className="button full-width"><FontAwesomeIcon icon={ faUserCircle } /></button>
-                            <button onClick={ () => this.reset() } className="button full-width"><FontAwesomeIcon icon={ faTrashAlt } /></button>
+                            <button onClick={ () => this.clearPage() } className="button full-width"><FontAwesomeIcon icon={ faTrashAlt } /></button>
                         </div>
                     </div>
 
