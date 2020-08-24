@@ -8,11 +8,12 @@ import { RawSnippet } from "../components/latex-editor/partials/rawSnippet";
 import {apiDelete, apiGet, apiPost, isAuthenticated} from "../api/functions";
 import {Endpoint} from "../api/endpoints";
 import { NoteForm } from "../components/noteForm";
-import {isValidNoteForm, rawToTextDBField, renderNotes} from "../utils/notes";
+import {isValidNoteForm, rawToTextDBField} from "../utils/notes";
 import {INote} from "../interfaces/notes";
 import {DATETIME, IRawPart} from "../interfaces/snippets";
 import {IUser} from "../interfaces/users";
 import {CourseType, SnippetType} from "../interfaces/db";
+import {NoteCard} from "../components/notes/note-card";
 
 interface Props {
     history: any;
@@ -174,7 +175,7 @@ export class ViewSnippet extends Component<Props, State> {
             );
         } else {
             return (
-                <Button color="secondary" onClick={ (e) => this.newNoteButtonHandler(e) }>New Note</Button>
+                <Button color="secondary" className="left-align" onClick={ (e) => this.newNoteButtonHandler(e) }>New Note</Button>
             );
         }
     }
@@ -209,6 +210,21 @@ export class ViewSnippet extends Component<Props, State> {
         }
     }
 
+    renderNotes() {
+        // { renderNotes(this.NOTES_PER_ROW, this.state.notes, (e, i) => this.deleteNoteHandler(e, i), this.state.user.id) }
+        return this.state.notes.map((note: INote, i: number) => {
+            const user = this.state.user;
+            const isMine = !!user ? user.id === note.created_by_uid : false;
+            return (
+                <NoteCard text={ note.text }
+                          key={ i }
+                          id={ note.id }
+                          isMine={ isMine }
+                          deleteHandler={ (e) => this.deleteNoteHandler(e, i) }
+                />);
+        });
+    }
+
     render() {
         if (this.state.isLoaded && !!this.state.user) {
             return (
@@ -221,9 +237,13 @@ export class ViewSnippet extends Component<Props, State> {
                     <hr/>
                     <RawSnippet raw={this.state.raw}/>
                     <hr/>
-                    <h2 className="secondary-header">Notes</h2>
-                    { renderNotes(this.NOTES_PER_ROW, this.state.notes, (e, i) => this.deleteNoteHandler(e, i), this.state.user.id) }
-                    {this.renderNoteForm()}
+                    <h2 className="left-align">Notes</h2>
+                    <div className="margin-bottom">
+                        {this.renderNoteForm()}
+                    </div>
+                    <div className="notes-container">
+                        { this.renderNotes() }
+                    </div>
                 </Container>
             );
         } else {

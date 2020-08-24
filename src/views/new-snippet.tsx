@@ -9,10 +9,11 @@ import { NoteForm } from "../components/noteForm";
 import {apiPost, isAuthenticated} from "../api/functions";
 import {Endpoint} from "../api/endpoints";
 import {buildSnippet} from "../utils/snippets";
-import {genNote, isValidNoteForm, renderNotes} from "../utils/notes";
+import {genNote, isValidNoteForm} from "../utils/notes";
 import {isValidSnippetForm} from "../utils/snippets";
 import {INote} from "../interfaces/notes";
 import {IUser} from "../interfaces/users";
+import {NoteCard} from "../components/notes/note-card";
 
 interface Props {
     history: any;
@@ -157,6 +158,21 @@ export class NewSnippet extends Component<Props, State> {
         }
     }
 
+    renderNotes() {
+        // { renderNotes(this.NOTES_PER_ROW, this.state.notes, (e, i) => this.deleteNoteHandler(e, i), this.state.user.id) }
+        return this.state.notes.map((note: INote, i: number) => {
+            const user = this.state.user;
+            const isMine = !!user ? user.id === note.created_by_uid : false;
+            return (
+                <NoteCard text={ note.text }
+                          key={ i }
+                          id={ note.id }
+                          isMine={ isMine }
+                          deleteHandler={ (e) => this.deleteNoteHandler(e, i) }
+                />);
+        });
+    }
+
     render() {
         if (this.state.isLoaded && !!this.state.user) {
             return (
@@ -167,9 +183,14 @@ export class NewSnippet extends Component<Props, State> {
                         <SnippetForm edit={ false } handler={(e, values) => this.createSnippetHandler(e, values)}/>
 
                         <hr/>
-                        <h2 className="secondary-header">Notes</h2>
-                        { renderNotes(this.NOTES_PER_ROW, this.state.notes, (e, i) => this.deleteNoteHandler(e, i), +this.state.user.id) }
-                        {this.renderNoteForm()}
+
+                        <h2 className="left-align">Notes</h2>
+                        <div className="margin-bottom">
+                            {this.renderNoteForm()}
+                        </div>
+                        <div className="notes-container">
+                            { this.renderNotes() }
+                        </div>
                     </Container>
 
                 </div>

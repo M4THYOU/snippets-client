@@ -43,7 +43,7 @@ export class NoteCard extends Component<Props, State> {
         if (this.state.isHovered && this.state.isMine) {
             return (
                 // eslint-disable-next-line no-script-url,jsx-a11y/anchor-is-valid
-                <a className="box-close" id="box-close"
+                <a className="box-close"
                    onMouseEnter={ () => this.cardMouseEnterHandler() }
                    onMouseLeave={ () => this.cardMouseLeaveHandler() }
                    onClick={ (e) => this.deleteHandler(e) }
@@ -54,7 +54,7 @@ export class NoteCard extends Component<Props, State> {
 
     render() {
         return (
-            <div>
+            <div className="note">
                 { this.renderX() }
                 <Card body inverse color="warning" className="note"
                       onMouseEnter={ () => this.cardMouseEnterHandler() }

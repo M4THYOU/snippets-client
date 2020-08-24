@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Container, Row, Col } from "reactstrap";
+import { Container } from "reactstrap";
 
 // Components
 import { SearchBar } from "../components/latex-editor/searchBar";
 import { SnippetCard } from "../components/snippets/snippet-card";
 
 // Functions/Enums
-import {chunkArray} from "../utils/utils";
 import {apiGet, isAuthenticated} from "../api/functions";
 import {Endpoint} from "../api/endpoints";
 import {SEARCH_LIMIT} from "../api/constants";
