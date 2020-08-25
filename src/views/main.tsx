@@ -23,8 +23,6 @@ interface State {
 }
 
 export class Main extends Component<Props, State> {
-    SNIPPETS_PER_ROW = 2;
-
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -85,9 +83,8 @@ export class Main extends Component<Props, State> {
         const updated_at = snippet.updated_at;
         // this div is used to get rid of the stretched height of each box in the flex row.
         return (
-            <div>
-                <SnippetCard key={id}
-                             course={course}
+            <div key={id}>
+                <SnippetCard course={course}
                              created_at={created_at}
                              id={id}
                              raw={raw}
@@ -114,7 +111,7 @@ export class Main extends Component<Props, State> {
             );
         }
 
-        return snippets.map((snippet, i) => {
+        return snippets.map((snippet) => {
             return this.renderSingleSnippet(snippet);
         });
     }
