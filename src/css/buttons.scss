@@ -1,0 +1,50 @@
+@import 'utils/constants';
+
+button {
+  color: white;
+  background-color: $default-color;
+
+  font-weight: 500;
+
+  border-radius: 0;
+  border: none;
+
+  padding: 10px 15px 10px 15px;
+
+  &.is-fullwidth {
+    width: 100%;
+  }
+
+  &.is-small {
+    padding: 4px 15px 4px 15px;
+    // smaller font and padding top.
+  }
+
+  &.is-outline {
+    font-weight: bold;
+  }
+  &.is-outline.is-primary {
+    border: solid 1px $primary-color;
+    background: none;
+    color: $primary-color;
+  }
+  &.is-outline.is-secondary {
+    border: solid 1px $secondary-darker-color;
+    background: none;
+    color: $secondary-darker-color;
+  }
+  &.is-outline.is-dark {
+    border: solid 1px $dark-color;
+    background: none;
+    color: $dark-color;
+  }
+
+}
+
+button:hover {
+  -webkit-filter: brightness(80%);
+  -webkit-transition: all 1ms ease;
+  -moz-transition: all 1ms ease;
+  -o-transition: all 1ms ease;
+  transition: all 1ms ease;
+}

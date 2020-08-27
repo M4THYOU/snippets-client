@@ -1,0 +1,16 @@
+@import 'utils/constants';
+
+.is-primary {
+  color: white;
+  background-color: $primary-color;
+}
+
+.is-secondary {
+  color: $dark-color;
+  background-color: $secondary-color;
+}
+
+.is-dark {
+  color: white;
+  background-color: $dark-color;
+}

@@ -1,7 +1,8 @@
 import * as React from 'react'
-import './App.scss';
 import {withRouter} from "react-router";
 import { Route, Switch, Redirect } from "react-router-dom";
+
+import './css/App.scss';
 
 // views
 import { Main } from "./views/main";

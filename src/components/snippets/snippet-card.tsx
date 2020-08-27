@@ -61,7 +61,7 @@ export class SnippetCard extends Component<Props, State> {
                 </CardHeader>
                 <CardBody>
                     <RawSnippet raw={ this.state.raw.raw_snippet }/>
-                    <Button onClick={ () => this.snippetButtonOnClick() }>More</Button>
+                    <button className="is-primary is-fullwidth" onClick={ () => this.snippetButtonOnClick() }>More</button>
                 </CardBody>
             </Card>
         );
