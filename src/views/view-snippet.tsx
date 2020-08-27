@@ -152,7 +152,7 @@ export class ViewSnippet extends Component<Props, State> {
 
     deleteNoteHandler(e, i) {
         e.preventDefault();
-        const listIndex = i - 1;
+        const listIndex = i;
         const notes = this.state.notes.slice();
 
         const note = notes[listIndex];
