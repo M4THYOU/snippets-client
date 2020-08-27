@@ -60,7 +60,7 @@ export class Profile extends Component<Props, State> {
                 let myLessons: ILessonWithRole[] = [];
                 let sharedLessons: ILessonWithRole[] = [];
                 result.data.forEach((lesson: ILessonWithRole) => {
-                    if (lesson.role_type === URoleType.LESSON_OWNER) {
+                    if (lesson.role_type === URoleType.OWNER) {
                         myLessons.push(lesson);
                     } else {
                         sharedLessons.push(lesson);

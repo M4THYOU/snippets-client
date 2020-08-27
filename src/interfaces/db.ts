@@ -9,9 +9,9 @@ export enum SnippetType {
 }
 
 export enum URoleType {
-    LESSON_MEMBER = 'lesson_member',
-    LESSON_OWNER = 'lesson_owner',
-    LESSON_EDITOR = 'lesson_editor', // not used ATM
+    MEMBER = 'member',
+    OWNER = 'owner',
+    EDITOR = 'editor', // not used ATM
 }
 export enum UGroupType {
     LESSON = 'lesson'
